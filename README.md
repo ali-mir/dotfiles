@@ -16,10 +16,15 @@ dotfiles/
 │       └── settings.json
 ├── work/              # work machine configs
 │   ├── .zshrc
-│   └── vscode/
-│       └── settings.json
+│   ├── vscode/
+│   │   └── settings.json
+│   └── arc/           # arc browser (snapshot, not symlinked)
+│       ├── preferences.plist
+│       └── StorableSidebar.json
 └── scripts/
-    └── setup.sh
+    ├── setup.sh
+    ├── arc-export.sh
+    └── arc-import.sh
 ```
 
 ## setting up a new machine
@@ -56,6 +61,29 @@ the script will back up any existing non-symlink files as `<file>.bak` before cr
 1. copy the file into the right profile directory (`personal/` or `work/`), or `common/` if shared.
 2. add a `backup_and_link` call to `scripts/setup.sh`.
 3. commit and push.
+
+## arc browser (work only)
+
+arc actively writes to its config files, so symlinks don't work. instead, use snapshot-based export/import scripts.
+
+**export** (save current arc state to the repo):
+```sh
+~/dev/dotfiles/scripts/arc-export.sh
+```
+
+**import** (restore on a new machine):
+```sh
+# make sure to quit Arc first
+~/dev/dotfiles/scripts/arc-import.sh
+```
+
+this captures:
+- **preferences** — auto-archive threshold, hover cards, auto-PiP, site-specific settings, etc.
+- **sidebar** — all spaces, pinned tabs, folders, and links
+
+the import script backs up any existing Arc files as `.bak` before overwriting and refuses to run while arc is open.
+
+re-run `arc-export.sh` and commit whenever you want to save a new snapshot.
 
 ## verification
 
