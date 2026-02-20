@@ -1,0 +1,5 @@
+[core]
+	pager = less -+$LESS -RS
+[user]
+	name = Ali Mir
+	email = ali.ahmed.mir@gmail.com

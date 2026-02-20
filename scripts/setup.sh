@@ -35,7 +35,7 @@ echo "Setting up $PROFILE machine dotfiles from $DOTFILES_DIR"
 echo
 
 backup_and_link "$PROFILE_DIR/.zshrc"            "$HOME/.zshrc"
-backup_and_link "$PROFILE_DIR/.gitconfig"         "$HOME/.gitconfig"
+backup_and_link "$COMMON_DIR/.gitconfig"            "$HOME/.gitconfig"
 backup_and_link "$PROFILE_DIR/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
 backup_and_link "$COMMON_DIR/ghostty/config"      "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 
