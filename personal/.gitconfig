@@ -1,0 +1,9 @@
+[core]
+        pager = less -+$LESS -RS
+[credential]
+        helper = store
+[user]
+        name = Ali Mir
+        email = ali.ahmed.mir@gmail.com
+[pull]
+        rebase = false

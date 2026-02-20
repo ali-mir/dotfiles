@@ -1,0 +1,7 @@
+working-directory = /Users/ali/dev
+theme = Iceberg Dark
+font-size = 20
+window-height = 25
+window-width = 85
+keybind = cmd+right=next_tab
+keybind = cmd+left=previous_tab
