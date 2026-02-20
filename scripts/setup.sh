@@ -40,4 +40,7 @@ backup_and_link "$PROFILE_DIR/vscode/settings.json" "$HOME/Library/Application S
 backup_and_link "$COMMON_DIR/ghostty/config"      "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 
 echo
-echo "Done. Verify with: ls -la ~/.zshrc ~/.gitconfig \"$HOME/Library/Application Support/com.mitchellh.ghostty/config\""
+echo "Done. Verify with:"
+echo "  ls -la ~/.zshrc ~/.gitconfig"
+echo "  ls -la ~/Library/Application\ Support/com.mitchellh.ghostty/config"
+echo "  ls -la ~/Library/Application\ Support/Code/User/settings.json"
