@@ -34,6 +34,16 @@ backup_and_link() {
 echo "Setting up $PROFILE machine dotfiles from $DOTFILES_DIR"
 echo
 
+# homebrew
+if command -v brew &>/dev/null; then
+  echo "  Homebrew already installed, updating..."
+  brew update
+else
+  echo "Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+echo
+
 # oh-my-zsh
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
   echo "Installing oh-my-zsh..."
