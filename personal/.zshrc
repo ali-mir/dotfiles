@@ -7,7 +7,7 @@ source $ZSH/oh-my-zsh.sh
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-export PATH="PATH=/opt/homebrew/opt/openjdk/bin:$PATH"
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 export PATH="/opt/homebrew/opt/python/bin:$PATH"
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
