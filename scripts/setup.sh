@@ -47,7 +47,18 @@ backup_and_link "$PROFILE_DIR/claude/claude_desktop_config.json" "$HOME/Library/
 
 # VSCode extensions
 EXTENSIONS_FILE="$PROFILE_DIR/vscode/extensions.txt"
-if [[ -s "$EXTENSIONS_FILE" ]]; then
+if ! command -v code &>/dev/null; then
+  VSCODE_BIN="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+  if [[ -f "$VSCODE_BIN" ]]; then
+    echo
+    echo "  Linking 'code' CLI to /usr/local/bin/code..."
+    ln -sf "$VSCODE_BIN" /usr/local/bin/code
+  else
+    echo
+    echo "  Skipping VSCode extensions (VSCode not installed and no 'code' CLI found)"
+  fi
+fi
+if command -v code &>/dev/null && [[ -s "$EXTENSIONS_FILE" ]]; then
   echo
   echo "Installing VSCode extensions..."
   while IFS= read -r ext; do
