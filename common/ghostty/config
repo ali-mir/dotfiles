@@ -1,7 +1,8 @@
 working-directory = /Users/ali/dev
 theme = Iceberg Dark
-font-size = 20
+font-size = 18
 window-height = 25
-window-width = 85
+window-width = 90
+window-save-state = always
 keybind = cmd+right=next_tab
 keybind = cmd+left=previous_tab
