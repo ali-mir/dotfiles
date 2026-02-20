@@ -31,15 +31,15 @@ dotfiles/
    git clone https://github.com/your-username/dotfiles.git ~/dev/dotfiles
    ```
 
-2. Run the appropriate setup script:
+2. Run the setup script with your profile:
    ```sh
+   chmod +x ~/dev/dotfiles/scripts/setup.sh
+
    # Personal machine
-   chmod +x ~/dev/dotfiles/scripts/setup-personal.sh
-   ~/dev/dotfiles/scripts/setup-personal.sh
+   ~/dev/dotfiles/scripts/setup.sh personal
 
    # Work machine
-   chmod +x ~/dev/dotfiles/scripts/setup-work.sh
-   ~/dev/dotfiles/scripts/setup-work.sh
+   ~/dev/dotfiles/scripts/setup.sh work
    ```
 
 The script will back up any existing non-symlink files as `<file>.bak` before creating symlinks.
@@ -59,7 +59,7 @@ The script will back up any existing non-symlink files as `<file>.bak` before cr
 2. Add a `backup_and_link` call to **both** `scripts/setup-personal.sh` and `scripts/setup-work.sh`.
 3. Commit and push.
 
-If the config should be the same on both machines, put it in `common/` and symlink it from both scripts.
+If the config should be the same on both machines, put it in `common/` and symlink it in the setup script.
 
 ## Ghostty
 
