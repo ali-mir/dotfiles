@@ -1,0 +1,7 @@
+[user]
+	name = Ali Mir
+	email = ali@work.example.com   # TODO: replace with your work email
+[core]
+	pager = less -+$LESS -RS
+[pull]
+	rebase = false
