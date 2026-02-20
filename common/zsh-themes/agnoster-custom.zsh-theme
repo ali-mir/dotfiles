@@ -4,5 +4,5 @@
 source "${ZSH}/themes/agnoster.zsh-theme"
 
 prompt_context() {
-  prompt_segment black default "USER"
+  prompt_segment black default "$USER"
 }
