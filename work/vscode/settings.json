@@ -1,1 +1,40 @@
-{}
+{
+    "workbench.colorTheme": "Tokyo Night",
+    "extensions.ignoreRecommendations": true,
+    "remote.SSH.remotePlatform": {
+        "linux": "macOS",
+        "workstation": "linux"
+    },
+    "remote.SSH.defaultForwardedPorts": [],
+    "remote.SSH.showLoginTerminal": false,
+    "workbench.colorCustomizations": {
+        "bookmarks.lineBorder": "#fca117"
+    },
+    "svelte.enable-ts-plugin": true,
+    "gitlens.hovers.currentLine.over": "line",
+    "gitlens.currentLine.enabled": false,
+    "window.zoomLevel": 2,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "eslint.validate": [
+        "javascript"
+    ],
+    "files.associations": {
+        "/home/ubuntu/disagg-storage/*.txt": "ansi"
+    },
+    "terminal.integrated.hideOnStartup": "always",
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer",
+        "editor.formatOnSave": true
+    },
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false,
+        "rust": false
+    },
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "gitlens.rebaseEditor.ordering": "asc"
+}
