@@ -1,5 +1,6 @@
 working-directory = /Users/ali/dev
 theme = Iceberg Dark
+font-family = Meslo LG S for Powerline
 font-size = 18
 window-height = 25
 window-width = 90

@@ -34,6 +34,29 @@ backup_and_link() {
 echo "Setting up $PROFILE machine dotfiles from $DOTFILES_DIR"
 echo
 
+# oh-my-zsh
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+  echo "Installing oh-my-zsh..."
+  RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+  echo "  oh-my-zsh already installed, skipping"
+fi
+echo
+
+# powerline font for agnoster
+if fc-list | grep -qi "for Powerline"; then
+  echo "  Powerline fonts already installed, skipping"
+else
+  echo "Installing Powerline fonts..."
+  git clone https://github.com/powerline/fonts.git --depth=1 /tmp/powerline-fonts
+  /tmp/powerline-fonts/install.sh
+  rm -rf /tmp/powerline-fonts
+fi
+echo
+
+# custom zsh theme
+backup_and_link "$COMMON_DIR/zsh-themes/agnoster-custom.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/agnoster-custom.zsh-theme"
+
 backup_and_link "$PROFILE_DIR/.zshrc"            "$HOME/.zshrc"
 backup_and_link "$COMMON_DIR/.gitconfig"            "$HOME/.gitconfig"
 backup_and_link "$PROFILE_DIR/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
