@@ -1,73 +1,69 @@
 # dotfiles
 
-Managed configs for personal and work machines. Setup scripts create symlinks from `~/` into this repo so edits in-place are tracked by git.
+managed configs for personal and work machines. setup scripts create symlinks from `~/` into this repo so edits in-place are tracked by `git`.
 
-## Structure
+## structure
 
 ```
 dotfiles/
-├── personal/          # Personal machine configs
-│   ├── .zshrc
-│   └── vscode/
-│       └── settings.json
-├── work/              # Work machine configs
-│   ├── .zshrc
-│   └── vscode/
-│       └── settings.json
-├── common/            # Shared across both machines
+├── common/            # shared across both machines
 │   ├── .gitconfig
 │   └── ghostty/
 │       └── config
+├── personal/          # personal machine configs
+│   ├── .zshrc
+│   └── vscode/
+│       └── settings.json
+├── work/              # work machine configs
+│   ├── .zshrc
+│   └── vscode/
+│       └── settings.json
 └── scripts/
     └── setup.sh
 ```
 
-## Setting up a new machine
+## setting up a new machine
 
-1. Clone the repo:
+1. clone the repo:
    ```sh
-   git clone https://github.com/your-username/dotfiles.git ~/dev/dotfiles
+   git clone https://github.com/ali-mir/dotfiles.git ~/dev/dotfiles
    ```
 
-2. Run the setup script with your profile:
+2. run the setup script with your chosen profile:
    ```sh
    chmod +x ~/dev/dotfiles/scripts/setup.sh
 
-   # Personal machine
+   # personal machine
    ~/dev/dotfiles/scripts/setup.sh personal
 
-   # Work machine
+   # work machine
    ~/dev/dotfiles/scripts/setup.sh work
    ```
 
-The script will back up any existing non-symlink files as `<file>.bak` before creating symlinks.
+the script will back up any existing non-symlink files as `<file>.bak` before creating symlinks.
 
-## What each script links
+## what each script links
 
 | Symlink | Target |
 |---|---|
-| `~/.zshrc` | `personal/` or `work/.zshrc` |
+| `~/.zshrc` | `personal/.zshrc` or `work/.zshrc` |
 | `~/.gitconfig` | `common/.gitconfig` (shared) |
-| `~/Library/Application Support/Code/User/settings.json` | `personal/` or `work/vscode/settings.json` |
+| `~/Library/Application Support/Code/User/settings.json` | `personal/vscode/settings.json` or `work/vscode/settings.json` |
 | `~/Library/Application Support/com.mitchellh.ghostty/config` | `common/ghostty/config` (shared) |
 
-## Adding a new config file
+## adding a new config file
 
-1. Copy the file into the right profile directory (`personal/` or `work/`), or `common/` if shared.
-2. Add a `backup_and_link` call to `scripts/setup.sh`.
-3. Commit and push.
+1. copy the file into the right profile directory (`personal/` or `work/`), or `common/` if shared.
+2. add a `backup_and_link` call to `scripts/setup.sh`.
+3. commit and push.
 
-## Ghostty
+## verification
 
-Ghostty config lives in `common/ghostty/config` and is shared between personal and work machines. Editing `~/Library/Application Support/com.mitchellh.ghostty/config` edits the file in the repo directly.
-
-## Verification
-
-After running a setup script:
+after running a setup script:
 ```sh
 ls -la ~/.zshrc ~/.gitconfig
 ls -la "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 ls -la "$HOME/Library/Application Support/Code/User/settings.json"
 ```
 
-All four should show symlinks pointing into the dotfiles repo.
+all four should show symlinks pointing into the dotfiles repo.
