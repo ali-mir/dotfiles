@@ -70,6 +70,7 @@ backup_and_link "$COMMON_DIR/zsh-themes/agnoster-custom.zsh-theme" "$HOME/.oh-my
 backup_and_link "$PROFILE_DIR/.zshrc"            "$HOME/.zshrc"
 backup_and_link "$COMMON_DIR/.gitconfig"            "$HOME/.gitconfig"
 backup_and_link "$PROFILE_DIR/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+backup_and_link "$PROFILE_DIR/vscode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
 backup_and_link "$COMMON_DIR/ghostty/config"      "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 
 # Claude Code settings
@@ -108,5 +109,6 @@ echo "Done. Verify with:"
 echo "  ls -la ~/.zshrc ~/.gitconfig"
 echo "  ls -la ~/Library/Application\ Support/com.mitchellh.ghostty/config"
 echo "  ls -la ~/Library/Application\ Support/Code/User/settings.json"
+echo "  ls -la ~/Library/Application\ Support/Code/User/keybindings.json"
 echo "  ls -la ~/.claude/settings.json"
 echo "  ls -la ~/Library/Application\ Support/Claude/claude_desktop_config.json"
