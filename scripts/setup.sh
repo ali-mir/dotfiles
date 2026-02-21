@@ -67,6 +67,7 @@ echo
 # custom zsh theme
 backup_and_link "$COMMON_DIR/zsh-themes/agnoster-custom.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/agnoster-custom.zsh-theme"
 
+backup_and_link "$PROFILE_DIR/ssh/config"         "$HOME/.ssh/config"
 backup_and_link "$PROFILE_DIR/.zshrc"            "$HOME/.zshrc"
 backup_and_link "$COMMON_DIR/.gitconfig"            "$HOME/.gitconfig"
 backup_and_link "$PROFILE_DIR/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
@@ -112,3 +113,4 @@ echo "  ls -la ~/Library/Application\ Support/Code/User/settings.json"
 echo "  ls -la ~/Library/Application\ Support/Code/User/keybindings.json"
 echo "  ls -la ~/.claude/settings.json"
 echo "  ls -la ~/Library/Application\ Support/Claude/claude_desktop_config.json"
+echo "  ls -la ~/.ssh/config"

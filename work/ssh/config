@@ -1,0 +1,8 @@
+Host workstation
+  HostName ali-mir-2ff.workstations.build.10gen.cc
+  User ubuntu
+
+Host *
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/mongodb_rsa
+

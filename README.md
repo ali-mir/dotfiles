@@ -27,6 +27,8 @@ dotfiles/
 │   ├── claude/
 │   │   ├── settings.json
 │   │   └── claude_desktop_config.json
+│   ├── ssh/
+│   │   └── config
 │   └── arc/           # arc browser (snapshot, not symlinked)
 │       ├── preferences.plist
 │       └── StorableSidebar.json
@@ -67,6 +69,7 @@ the script will back up any existing non-symlink files as `<file>.bak` before cr
 | `~/Library/Application Support/com.mitchellh.ghostty/config` | `common/ghostty/config` (shared) |
 | `~/.claude/settings.json` | `personal/claude/settings.json` or `work/claude/settings.json` |
 | `~/Library/Application Support/Claude/claude_desktop_config.json` | `personal/claude/claude_desktop_config.json` or `work/claude/claude_desktop_config.json` |
+| `~/.ssh/config` | `work/ssh/config` |
 
 ## adding a new config file
 
@@ -118,6 +121,7 @@ ls -la "$HOME/Library/Application Support/Code/User/settings.json"
 ls -la "$HOME/Library/Application Support/Code/User/keybindings.json"
 ls -la ~/.claude/settings.json
 ls -la "$HOME/Library/Application Support/Claude/claude_desktop_config.json"
+ls -la ~/.ssh/config
 ```
 
 all should show symlinks pointing into the dotfiles repo.
