@@ -49,8 +49,6 @@ dotfiles/
 
 2. run the setup script with your chosen profile:
    ```sh
-   chmod +x ~/dev/dotfiles/scripts/setup.sh
-
    # personal machine
    ~/dev/dotfiles/scripts/setup.sh personal
 
