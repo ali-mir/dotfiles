@@ -8,6 +8,8 @@ managed configs for personal and work machines. setup scripts create symlinks fr
 dotfiles/
 ├── common/            # shared across both machines
 │   ├── .gitconfig
+│   ├── git/
+│   │   └── ignore     # global gitignore
 │   └── ghostty/
 │       └── config
 ├── personal/          # personal machine configs
@@ -64,6 +66,7 @@ the script will back up any existing non-symlink files as `<file>.bak` before cr
 |---|---|
 | `~/.zshrc` | `personal/.zshrc` or `work/.zshrc` |
 | `~/.gitconfig` | `common/.gitconfig` (shared) |
+| `~/.config/git/ignore` | `common/git/ignore` (shared, global gitignore) |
 | `~/Library/Application Support/Code/User/settings.json` | `personal/vscode/settings.json` or `work/vscode/settings.json` |
 | `~/Library/Application Support/Code/User/keybindings.json` | `personal/vscode/keybindings.json` or `work/vscode/keybindings.json` |
 | `~/Library/Application Support/com.mitchellh.ghostty/config` | `common/ghostty/config` (shared) |
@@ -115,7 +118,7 @@ re-run `arc-export.sh` and commit whenever you want to save a new snapshot.
 
 after running a setup script:
 ```sh
-ls -la ~/.zshrc ~/.gitconfig
+ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore
 ls -la "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 ls -la "$HOME/Library/Application Support/Code/User/settings.json"
 ls -la "$HOME/Library/Application Support/Code/User/keybindings.json"
