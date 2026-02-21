@@ -44,6 +44,13 @@ else
 fi
 echo
 
+# Install age for encrypted backups
+if ! command -v age &>/dev/null; then
+  echo "Installing age..."
+  brew install age
+fi
+echo
+
 # oh-my-zsh
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
   echo "Installing oh-my-zsh..."

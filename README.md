@@ -10,8 +10,11 @@ dotfiles/
 │   ├── .gitconfig
 │   ├── git/
 │   │   └── ignore     # global gitignore
-│   └── ghostty/
-│       └── config
+│   ├── ghostty/
+│   │   └── config
+│   └── arc/           # arc browser snapshots (encrypted)
+│       ├── StorableSidebar.json.age
+│       └── preferences.plist.age
 ├── personal/          # personal machine configs
 │   ├── .zshrc
 │   ├── vscode/
@@ -29,11 +32,8 @@ dotfiles/
 │   ├── claude/
 │   │   ├── settings.json
 │   │   └── claude_desktop_config.json
-│   ├── ssh/
-│   │   └── config
-│   └── arc/           # arc browser (snapshot, not symlinked)
-│       ├── preferences.plist
-│       └── StorableSidebar.json
+│   └── ssh/
+│       └── config
 └── scripts/
     ├── setup.sh
     ├── arc-export.sh
@@ -89,19 +89,23 @@ code --list-extensions > ~/dev/dotfiles/work/vscode/extensions.txt
 code --list-extensions > ~/dev/dotfiles/personal/vscode/extensions.txt
 ```
 
-## arc browser (work only)
+## arc browser
 
-arc actively writes to its config files, so symlinks don't work. instead, use snapshot-based export/import scripts.
+arc actively writes to its config files, so symlinks don't work. instead, use snapshot-based export/import scripts. snapshots are stored in `common/arc/` so they can be shared across machines.
+
+backups are encrypted with [`age`](https://github.com/FiloSottile/age) passphrase encryption — only `.age` files are committed, plaintext never touches git.
 
 **export** (save current arc state to the repo):
 ```sh
 ~/dev/dotfiles/scripts/arc-export.sh
+# prompts for a passphrase, produces StorableSidebar.json.age and preferences.plist.age
 ```
 
 **import** (restore on a new machine):
 ```sh
 # make sure to quit Arc first
 ~/dev/dotfiles/scripts/arc-import.sh
+# prompts for the passphrase, decrypts to a temp location, imports, then cleans up
 ```
 
 this captures:

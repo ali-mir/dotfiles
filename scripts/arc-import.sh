@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ARC_DIR="$DOTFILES_DIR/work/arc"
+ARC_DIR="$DOTFILES_DIR/common/arc"
 
 ARC_SUPPORT="$HOME/Library/Application Support/Arc"
 ARC_PLIST_DOMAIN="company.thebrowser.Browser"
@@ -19,8 +19,24 @@ if pgrep -xq "Arc"; then
   exit 1
 fi
 
+if [[ ! -f "$ARC_DIR/StorableSidebar.json.age" && ! -f "$ARC_DIR/preferences.plist.age" ]]; then
+  echo "Error: No encrypted files found in $ARC_DIR. Run arc-export.sh first."
+  exit 1
+fi
+
 echo "Importing Arc browser settings from $ARC_DIR"
 echo
+
+read -rs -p "  Enter passphrase to decrypt: " PASSPHRASE
+echo
+
+if [[ -f "$ARC_DIR/StorableSidebar.json.age" ]]; then
+  printf '%s\n' "$PASSPHRASE" | age -d -o "$ARC_DIR/StorableSidebar.json" "$ARC_DIR/StorableSidebar.json.age"
+fi
+if [[ -f "$ARC_DIR/preferences.plist.age" ]]; then
+  printf '%s\n' "$PASSPHRASE" | age -d -o "$ARC_DIR/preferences.plist" "$ARC_DIR/preferences.plist.age"
+fi
+trap 'rm -f "$ARC_DIR/StorableSidebar.json" "$ARC_DIR/preferences.plist"' EXIT
 
 # Import preferences
 if [[ -f "$ARC_DIR/preferences.plist" ]]; then
