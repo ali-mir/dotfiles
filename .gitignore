@@ -1,3 +1,4 @@
 # Arc plaintext exports — only .age encrypted versions should be committed
 common/arc/*.json
 common/arc/*.plist
+.DS_Store
