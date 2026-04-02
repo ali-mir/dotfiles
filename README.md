@@ -6,16 +6,18 @@ managed configs for personal and work machines. setup scripts create symlinks fr
 
 ```
 dotfiles/
-├── common/            # shared across both machines
+├── common/            # shared across all machines
 │   ├── .gitconfig
 │   ├── git/
 │   │   └── ignore     # global gitignore
 │   ├── ghostty/
 │   │   └── config
+│   ├── zsh-themes/
+│   │   └── agnoster-custom.zsh-theme
 │   └── arc/           # arc browser snapshots (encrypted)
 │       ├── StorableSidebar.json.age
 │       └── preferences.plist.age
-├── personal/          # personal machine configs
+├── personal/          # personal macOS configs
 │   ├── .zshrc
 │   ├── vscode/
 │   │   ├── settings.json
@@ -23,17 +25,29 @@ dotfiles/
 │   └── claude/
 │       ├── settings.json
 │       └── claude_desktop_config.json
-├── work/              # work machine configs
-│   ├── .zshrc
-│   ├── vscode/
-│   │   ├── settings.json
-│   │   ├── keybindings.json
-│   │   └── extensions.txt
-│   ├── claude/
-│   │   ├── settings.json
-│   │   └── claude_desktop_config.json
-│   └── ssh/
-│       └── config
+├── work/
+│   ├── macos/         # work macOS configs
+│   │   ├── .zshrc
+│   │   ├── vscode/
+│   │   │   ├── settings.json
+│   │   │   ├── keybindings.json
+│   │   │   └── extensions.txt
+│   │   ├── claude/
+│   │   │   ├── settings.json
+│   │   │   └── claude_desktop_config.json
+│   │   └── ssh/
+│   │       └── config
+│   └── linux/         # work linux VM configs
+│       ├── .zshrc
+│       ├── .tmux.conf
+│       ├── .workstreams
+│       ├── bin/
+│       │   ├── ws
+│       │   ├── ws-new
+│       │   ├── ws-kill
+│       │   └── ws-list
+│       └── claude/
+│           └── settings.json
 └── scripts/
     ├── setup.sh
     ├── arc-export.sh
@@ -44,49 +58,71 @@ dotfiles/
 
 1. clone the repo:
    ```sh
-   git clone https://github.com/ali-mir/dotfiles.git ~/dev/dotfiles
+   git clone https://github.com/ali-mir/dotfiles.git ~/dotfiles
    ```
 
-2. run the setup script with your chosen profile:
+2. run the setup script with your profile:
    ```sh
-   # personal machine
-   ~/dev/dotfiles/scripts/setup.sh personal
+   # personal macOS
+   ~/dotfiles/scripts/setup.sh personal
 
-   # work machine
-   ~/dev/dotfiles/scripts/setup.sh work
+   # work macOS
+   ~/dotfiles/scripts/setup.sh work-macos
+
+   # work linux VM
+   ~/dotfiles/scripts/setup.sh work-linux
    ```
 
-the script will back up any existing non-symlink files as `<file>.bak` before creating symlinks.
+the script checks the platform and refuses to run a macOS profile on linux (or vice versa). existing non-symlink files are backed up as `<file>.bak`.
 
-## what each script links
+## what gets linked
+
+### all profiles (common)
 
 | Symlink | Target |
 |---|---|
-| `~/.zshrc` | `personal/.zshrc` or `work/.zshrc` |
-| `~/.gitconfig` | `common/.gitconfig` (shared) |
-| `~/.config/git/ignore` | `common/git/ignore` (shared, global gitignore) |
-| `~/Library/Application Support/Code/User/settings.json` | `personal/vscode/settings.json` or `work/vscode/settings.json` |
-| `~/Library/Application Support/Code/User/keybindings.json` | `personal/vscode/keybindings.json` or `work/vscode/keybindings.json` |
-| `~/Library/Application Support/com.mitchellh.ghostty/config` | `common/ghostty/config` (shared) |
-| `~/.claude/settings.json` | `personal/claude/settings.json` or `work/claude/settings.json` |
-| `~/Library/Application Support/Claude/claude_desktop_config.json` | `personal/claude/claude_desktop_config.json` or `work/claude/claude_desktop_config.json` |
-| `~/.ssh/config` | `work/ssh/config` |
+| `~/.gitconfig` | `common/.gitconfig` |
+| `~/.config/git/ignore` | `common/git/ignore` |
+| `~/.oh-my-zsh/custom/themes/agnoster-custom.zsh-theme` | `common/zsh-themes/agnoster-custom.zsh-theme` |
+| `~/.zshrc` | `<profile>/.zshrc` |
+| `~/.claude/settings.json` | `<profile>/claude/settings.json` |
+
+### macOS profiles (personal, work-macos)
+
+| Symlink | Target |
+|---|---|
+| `~/Library/.../Code/User/settings.json` | `<profile>/vscode/settings.json` |
+| `~/Library/.../Code/User/keybindings.json` | `<profile>/vscode/keybindings.json` |
+| `~/Library/.../com.mitchellh.ghostty/config` | `common/ghostty/config` |
+| `~/Library/.../Claude/claude_desktop_config.json` | `<profile>/claude/claude_desktop_config.json` |
+| `~/.ssh/config` | `<profile>/ssh/config` |
+
+### work-linux
+
+| Symlink | Target |
+|---|---|
+| `~/.tmux.conf` | `work/linux/.tmux.conf` |
+| `~/.workstreams` | `work/linux/.workstreams` |
+| `~/bin/ws` | `work/linux/bin/ws` |
+| `~/bin/ws-new` | `work/linux/bin/ws-new` |
+| `~/bin/ws-kill` | `work/linux/bin/ws-kill` |
+| `~/bin/ws-list` | `work/linux/bin/ws-list` |
 
 ## adding a new config file
 
-1. copy the file into the right profile directory (`personal/` or `work/`), or `common/` if shared.
+1. copy the file into the right directory (`common/`, `personal/`, `work/macos/`, or `work/linux/`).
 2. add a `backup_and_link` call to `scripts/setup.sh`.
 3. commit and push.
 
 ## vscode extensions
 
-each profile has an `extensions.txt` listing installed extensions. the setup script installs them automatically via `code --install-extension`.
+each macOS profile has an `extensions.txt` listing installed extensions. the setup script installs them automatically via `code --install-extension`.
 
 to update the list after installing new extensions:
 ```sh
-code --list-extensions > ~/dev/dotfiles/work/vscode/extensions.txt
+code --list-extensions > ~/dotfiles/work/macos/vscode/extensions.txt
 # or for personal
-code --list-extensions > ~/dev/dotfiles/personal/vscode/extensions.txt
+code --list-extensions > ~/dotfiles/personal/vscode/extensions.txt
 ```
 
 ## arc browser
@@ -97,36 +133,37 @@ backups are encrypted with [`age`](https://github.com/FiloSottile/age) passphras
 
 **export** (save current arc state to the repo):
 ```sh
-~/dev/dotfiles/scripts/arc-export.sh
+~/dotfiles/scripts/arc-export.sh
 # prompts for a passphrase, produces StorableSidebar.json.age and preferences.plist.age
 ```
 
 **import** (restore on a new machine):
 ```sh
 # make sure to quit Arc first
-~/dev/dotfiles/scripts/arc-import.sh
+~/dotfiles/scripts/arc-import.sh
 # prompts for the passphrase, decrypts to a temp location, imports, then cleans up
 ```
 
-this captures:
-- **preferences** — auto-archive threshold, hover cards, auto-PiP, site-specific settings, etc.
-- **sidebar** — all spaces, pinned tabs, folders, and links
+## workstream management (linux VM)
 
-the import script backs up any existing Arc files as `.bak` before overwriting and refuses to run while arc is open.
-
-re-run `arc-export.sh` and commit whenever you want to save a new snapshot.
+the `work-linux` profile includes tmux workstream scripts. see `~/tmux.md` for usage.
 
 ## verification
 
-after running a setup script:
+after running setup:
 ```sh
-ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore
+# all platforms
+ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore ~/.claude/settings.json
+
+# macOS
 ls -la "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 ls -la "$HOME/Library/Application Support/Code/User/settings.json"
-ls -la "$HOME/Library/Application Support/Code/User/keybindings.json"
-ls -la ~/.claude/settings.json
 ls -la "$HOME/Library/Application Support/Claude/claude_desktop_config.json"
 ls -la ~/.ssh/config
+
+# linux
+ls -la ~/.tmux.conf ~/.workstreams
+ls -la ~/bin/ws ~/bin/ws-new ~/bin/ws-kill ~/bin/ws-list
 ```
 
 all should show symlinks pointing into the dotfiles repo.

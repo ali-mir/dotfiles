@@ -1,0 +1,140 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+MAIN_REPO="$HOME/mongo"
+CONFIG="$HOME/.workstreams"
+BAZEL_CACHE="$HOME/.cache/bazel/_bazel_$(whoami)"
+
+usage() {
+    cat <<'EOF'
+Usage: ws-kill <name>
+
+Remove a workstream. Kills the tmux session and removes the config entry.
+
+For mongo worktrees, also:
+  - Removes compile_commands.json
+  - Removes the git worktree
+  - Deletes the branch
+  - Cleans up associated bazel cache directories
+EOF
+    exit 1
+}
+
+[[ $# -ne 1 || "$1" == "-h" || "$1" == "--help" ]] && usage
+name="$1"
+
+# Read config entry
+config_line=$(grep "^${name}:" "$CONFIG" 2>/dev/null || true)
+if [[ -z "$config_line" ]]; then
+    echo "Error: workstream '$name' not found in $CONFIG"
+    exit 1
+fi
+
+dir=$(echo "$config_line" | cut -d: -f2)
+flags=$(echo "$config_line" | cut -d: -f3)
+dir="${dir/#\~/$HOME}"
+
+echo "=== Killing workstream: $name ==="
+
+# Build list of actions
+actions=()
+
+if tmux has-session -t "=${name}" 2>/dev/null; then
+    actions+=("Kill tmux session '$name'")
+fi
+
+is_worktree=false
+if [[ "$flags" == *worktree* ]]; then
+    is_worktree=true
+
+    if [[ -f "$dir/compile_commands.json" ]]; then
+        actions+=("Remove $dir/compile_commands.json")
+    fi
+
+    if git -C "$MAIN_REPO" worktree list --porcelain | grep -q "^worktree ${dir}$"; then
+        actions+=("Remove git worktree at $dir")
+    fi
+
+    # Check if branch exists
+    if git -C "$MAIN_REPO" rev-parse --verify "$name" &>/dev/null; then
+        actions+=("Delete branch '$name'")
+    fi
+
+    # Find bazel cache dirs
+    bazel_dirs=()
+    if [[ -d "$BAZEL_CACHE" ]]; then
+        for marker in "$BAZEL_CACHE"/*/DO_NOT_BUILD_HERE; do
+            [[ -f "$marker" ]] || continue
+            if [[ "$(cat "$marker")" == "$dir" ]]; then
+                bdir="$(dirname "$marker")"
+                size=$(du -sh "$bdir" 2>/dev/null | cut -f1)
+                bazel_dirs+=("$bdir")
+                actions+=("Remove bazel cache $(basename "$bdir") ($size)")
+            fi
+        done
+    fi
+fi
+
+actions+=("Remove config entry from $CONFIG")
+
+if [[ ${#actions[@]} -eq 0 ]]; then
+    echo "  Nothing to clean up."
+    exit 0
+fi
+
+echo "  Will execute:"
+for a in "${actions[@]}"; do
+    echo "    - $a"
+done
+
+echo ""
+read "confirm?  Proceed? [y/N] "
+[[ "$confirm" =~ ^[Yy]$ ]] || { echo "  Aborted."; exit 0; }
+
+# Execute
+if tmux has-session -t "=${name}" 2>/dev/null; then
+    # If we're inside tmux and killing our current session, switch to another first
+    if [[ -n "${TMUX:-}" ]]; then
+        current_session=$(tmux display-message -p '#S')
+        if [[ "$current_session" == "$name" ]]; then
+            # Find another session to switch to
+            other=$(tmux list-sessions -F '#S' | grep -v "^${name}$" | head -1)
+            if [[ -n "$other" ]]; then
+                tmux switch-client -t "=${other}"
+            fi
+        fi
+    fi
+    tmux kill-session -t "=${name}"
+    echo "  Killed tmux session."
+fi
+
+if [[ "$is_worktree" == true ]]; then
+    if [[ -f "$dir/compile_commands.json" ]]; then
+        rm -f "$dir/compile_commands.json"
+        echo "  Removed compile_commands.json."
+    fi
+
+    if git -C "$MAIN_REPO" worktree list --porcelain | grep -q "^worktree ${dir}$"; then
+        git -C "$MAIN_REPO" worktree remove "$dir"
+        echo "  Removed worktree."
+    fi
+
+    if git -C "$MAIN_REPO" rev-parse --verify "$name" &>/dev/null; then
+        git -C "$MAIN_REPO" branch -D "$name"
+        echo "  Deleted branch."
+    fi
+
+    if [[ ${#bazel_dirs[@]} -gt 0 ]]; then
+        for d in "${bazel_dirs[@]}"; do
+            chmod -R u+w "$d" 2>/dev/null || true
+            rm -rf "$d"
+            echo "  Removed bazel cache: $(basename "$d")"
+        done
+    fi
+fi
+
+# Remove config entry
+grep -v "^${name}:" "$CONFIG" > "${CONFIG}.tmp" && mv "${CONFIG}.tmp" "$CONFIG"
+echo "  Removed config entry."
+
+echo "  Done."

@@ -1,0 +1,135 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+MAIN_REPO="$HOME/mongo"
+CONFIG="$HOME/.workstreams"
+
+usage() {
+    cat <<'EOF'
+Usage: ws-new <name> [--base <branch>] [--dir <path>]
+
+Create a new workstream (tmux session).
+
+Modes:
+  Default         Create a mongo git worktree at ~/<name> with branch <name>
+  --dir <path>    Use an existing directory (no worktree, no venv)
+
+Options:
+  --base <branch>  Base branch for the worktree (default: master)
+EOF
+    exit 1
+}
+
+name=""
+base="master"
+dir=""
+mode="worktree"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --base)
+            [[ $# -lt 2 ]] && usage
+            base="$2"; shift 2 ;;
+        --dir)
+            [[ $# -lt 2 ]] && usage
+            dir="$2"; mode="dir"; shift 2 ;;
+        -h|--help)
+            usage ;;
+        -*)
+            echo "Unknown option: $1"; usage ;;
+        *)
+            [[ -n "$name" ]] && { echo "Too many arguments"; usage; }
+            name="$1"; shift ;;
+    esac
+done
+
+[[ -z "$name" ]] && usage
+
+# Check if workstream already exists in config
+if grep -q "^${name}:" "$CONFIG" 2>/dev/null; then
+    echo "Error: workstream '$name' already exists in $CONFIG"
+    exit 1
+fi
+
+# Check if tmux session already exists
+if tmux has-session -t "=${name}" 2>/dev/null; then
+    echo "Error: tmux session '$name' already exists"
+    exit 1
+fi
+
+# Track what was created so we can roll back on failure
+created_worktree=false
+created_branch=false
+created_session=false
+
+cleanup() {
+    echo "Error occurred, rolling back..."
+    if $created_session; then
+        tmux kill-session -t "=${name}" 2>/dev/null && echo "  Rolled back tmux session."
+    fi
+    if $created_worktree; then
+        git -C "$MAIN_REPO" worktree remove "$HOME/$name" 2>/dev/null && echo "  Rolled back worktree."
+    fi
+    if $created_branch; then
+        git -C "$MAIN_REPO" branch -D "$name" 2>/dev/null && echo "  Rolled back branch."
+    fi
+}
+trap cleanup ERR
+
+if [[ "$mode" == "worktree" ]]; then
+    worktree_path="$HOME/$name"
+
+    if [[ -d "$worktree_path" ]]; then
+        echo "Error: directory $worktree_path already exists"
+        exit 1
+    fi
+
+    echo "Creating worktree at $worktree_path (branch: $name, base: $base)..."
+    git -C "$MAIN_REPO" worktree add -b "$name" "$worktree_path" "$base"
+    created_worktree=true
+    created_branch=true
+
+    echo "Creating tmux session '$name'..."
+    tmux new-session -d -s "$name" -n zsh -c "$worktree_path"
+    created_session=true
+
+    tmux send-keys -t "=${name}:zsh" "source $MAIN_REPO/venv/bin/activate" C-m
+    tmux send-keys -t "=${name}:zsh" "clear" C-m
+
+    tmux new-window -t "=${name}" -n claude -c "$worktree_path"
+    tmux send-keys -t "=${name}:claude" "claude" C-m
+    tmux select-window -t "=${name}:zsh"
+
+    echo "${name}:~/${name}:venv,worktree" >> "$CONFIG"
+    echo "Done. Workstream '$name' created (mongo worktree off $base)."
+
+elif [[ "$mode" == "dir" ]]; then
+    dir="${dir/#\~/$HOME}"
+
+    if [[ ! -d "$dir" ]]; then
+        echo "Error: directory $dir does not exist"
+        exit 1
+    fi
+
+    echo "Creating tmux session '$name' at $dir..."
+    tmux new-session -d -s "$name" -n zsh -c "$dir"
+    created_session=true
+
+    tmux new-window -t "=${name}" -n claude -c "$dir"
+    tmux send-keys -t "=${name}:claude" "claude" C-m
+    tmux select-window -t "=${name}:zsh"
+
+    # Store with ~ for portability
+    config_dir="${dir/#$HOME/~}"
+    echo "${name}:${config_dir}:" >> "$CONFIG"
+    echo "Done. Workstream '$name' created (directory: $dir)."
+fi
+
+trap - ERR
+
+if [[ -n "$TMUX" ]]; then
+    echo "Switch with: tmux switch-client -t $name"
+    echo "Or press Ctrl-a s to pick from session list."
+else
+    echo "Attach with: tmux attach -t $name"
+fi
