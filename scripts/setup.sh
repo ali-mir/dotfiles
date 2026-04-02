@@ -150,6 +150,7 @@ fi
 if [[ "$OS" == "Linux" ]]; then
   backup_and_link "$PROFILE_DIR/.tmux.conf"   "$HOME/.tmux.conf"
   backup_and_link "$PROFILE_DIR/.workstreams"  "$HOME/.workstreams"
+  backup_and_link "$PROFILE_DIR/TMUX.md"       "$HOME/TMUX.md"
 
   # ws-* workstream scripts
   for script in ws ws-new ws-kill ws-list; do
