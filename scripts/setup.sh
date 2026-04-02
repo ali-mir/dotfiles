@@ -149,7 +149,13 @@ fi
 # --- Linux-only setup ---
 if [[ "$OS" == "Linux" ]]; then
   backup_and_link "$PROFILE_DIR/.tmux.conf"   "$HOME/.tmux.conf"
-  backup_and_link "$PROFILE_DIR/.workstreams"  "$HOME/.workstreams"
+  # .workstreams is per-machine (not symlinked) — seed from default if missing
+  if [[ ! -f "$HOME/.workstreams" ]]; then
+    cp "$PROFILE_DIR/.workstreams.default" "$HOME/.workstreams"
+    echo "  Copied default .workstreams to ~/.workstreams"
+  else
+    echo "  ~/.workstreams already exists, skipping"
+  fi
   backup_and_link "$PROFILE_DIR/TMUX.md"       "$HOME/TMUX.md"
 
   # ws-* workstream scripts
@@ -169,6 +175,7 @@ if [[ "$OS" == "Darwin" ]]; then
   echo "  ls -la ~/Library/Application\ Support/Claude/claude_desktop_config.json"
   echo "  ls -la ~/.ssh/config"
 elif [[ "$OS" == "Linux" ]]; then
-  echo "  ls -la ~/.tmux.conf ~/.workstreams"
+  echo "  ls -la ~/.tmux.conf"
+  echo "  cat ~/.workstreams"
   echo "  ls -la ~/bin/ws ~/bin/ws-new ~/bin/ws-kill ~/bin/ws-list"
 fi

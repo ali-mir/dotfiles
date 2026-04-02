@@ -40,7 +40,7 @@ dotfiles/
 │   └── linux/         # work linux VM configs
 │       ├── .zshrc
 │       ├── .tmux.conf
-│       ├── .workstreams
+│       ├── .workstreams.default
 │       ├── bin/
 │       │   ├── ws
 │       │   ├── ws-new
@@ -102,7 +102,7 @@ the script checks the platform and refuses to run a macOS profile on linux (or v
 | Symlink | Target |
 |---|---|
 | `~/.tmux.conf` | `work/linux/.tmux.conf` |
-| `~/.workstreams` | `work/linux/.workstreams` |
+| `~/.workstreams` | copied from `work/linux/.workstreams.default` (not symlinked) |
 | `~/bin/ws` | `work/linux/bin/ws` |
 | `~/bin/ws-new` | `work/linux/bin/ws-new` |
 | `~/bin/ws-kill` | `work/linux/bin/ws-kill` |
@@ -166,4 +166,4 @@ ls -la ~/.tmux.conf ~/.workstreams
 ls -la ~/bin/ws ~/bin/ws-new ~/bin/ws-kill ~/bin/ws-list
 ```
 
-all should show symlinks pointing into the dotfiles repo.
+symlinks should point into the dotfiles repo. `~/.workstreams` is a regular file (copied from default on first setup, then managed locally).
