@@ -105,8 +105,9 @@ if [[ "$mode" == "worktree" ]]; then
 
 elif [[ "$mode" == "dir" ]]; then
     dir="${dir/#\~/$HOME}"
+    dir="$(cd "$dir" 2>/dev/null && pwd)" || dir=""
 
-    if [[ ! -d "$dir" ]]; then
+    if [[ -z "$dir" || ! -d "$dir" ]]; then
         echo "Error: directory $dir does not exist"
         exit 1
     fi

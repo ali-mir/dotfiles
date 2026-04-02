@@ -2,4 +2,4 @@
 # flags: venv = activate venv, worktree = mongo git worktree (cleaned up on kill)
 mongo:~/mongo:venv
 index-build-lag:~/index-build-lag:venv,worktree
-dotfiles:..:
+dotfiles:~/dotfiles:
