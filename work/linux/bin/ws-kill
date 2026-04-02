@@ -93,14 +93,21 @@ read "confirm?  Proceed? [y/N] "
 
 # Execute
 if tmux has-session -t "=${name}" 2>/dev/null; then
-    # If we're inside tmux and killing our current session, switch to another first
+    # If we're inside tmux and killing our own session, switch away first
     if [[ -n "${TMUX:-}" ]]; then
         current_session=$(tmux display-message -p '#S')
         if [[ "$current_session" == "$name" ]]; then
-            # Find another session to switch to
-            other=$(tmux list-sessions -F '#S' | grep -v "^${name}$" | head -1)
-            if [[ -n "$other" ]]; then
-                tmux switch-client -t "=${other}"
+            # Get ordered session list and find the preceding one
+            sessions=("${(@f)$(tmux list-sessions -F '#S')}")
+            prev=""
+            for s in "${sessions[@]}"; do
+                [[ "$s" == "$name" ]] && break
+                prev="$s"
+            done
+            # Fall back to any other session if nothing precedes
+            [[ -z "$prev" ]] && prev=$(tmux list-sessions -F '#S' | grep -v "^${name}$" | tail -1)
+            if [[ -n "$prev" ]]; then
+                tmux switch-client -t "=${prev}"
             fi
         fi
     fi
