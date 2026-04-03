@@ -27,4 +27,5 @@ if [[ -z "$TMUX" ]]; then
             fi
         done < ~/.workstreams
     fi
+    ws || cd ~/dev
 fi
