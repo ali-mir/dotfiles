@@ -1,0 +1,34 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+# If inside tmux, use built-in session picker
+if [[ -n "${TMUX:-}" ]]; then
+    exec tmux choose-tree -s
+fi
+
+# Outside tmux: numbered menu
+sessions=("${(@f)$(tmux list-sessions -F '#S' 2>/dev/null)}")
+
+if [[ ${#sessions[@]} -eq 0 ]]; then
+    echo "No tmux sessions running."
+    exit 1
+fi
+
+if [[ ${#sessions[@]} -eq 1 ]]; then
+    exec tmux attach-session -t "${sessions[1]}"
+fi
+
+echo "Sessions:"
+for (( i = 1; i <= ${#sessions[@]}; i++ )); do
+    echo "  $(( i - 1 ))) ${sessions[$i]}"
+done
+echo ""
+
+read "choice?Select [0-$(( ${#sessions[@]} - 1 ))]: "
+
+if [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 0 && choice < ${#sessions[@]} )); then
+    exec tmux attach-session -t "${sessions[$(( choice + 1 ))]}"
+else
+    echo "Invalid selection."
+    exit 1
+fi

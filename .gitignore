@@ -5,3 +5,4 @@ common/arc/*.plist
 
 # workstreams changes frequently per-machine — only the .default template is tracked
 work/linux/.workstreams
+personal/.workstreams

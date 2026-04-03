@@ -1,0 +1,75 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+CONFIG="$HOME/.workstreams"
+
+usage() {
+    cat <<'EOF'
+Usage: ws-kill <name>
+
+Remove a workstream. Kills the tmux session and removes the config entry.
+EOF
+    exit 1
+}
+
+[[ $# -ne 1 || "$1" == "-h" || "$1" == "--help" ]] && usage
+name="$1"
+
+# Read config entry
+config_line=$(grep "^${name}:" "$CONFIG" 2>/dev/null || true)
+if [[ -z "$config_line" ]]; then
+    echo "Error: workstream '$name' not found in $CONFIG"
+    exit 1
+fi
+
+dir=$(echo "$config_line" | cut -d: -f2)
+
+echo "=== Killing workstream: $name ==="
+
+# Build list of actions
+actions=()
+
+if tmux has-session -t "=${name}" 2>/dev/null; then
+    actions+=("Kill tmux session '$name'")
+fi
+
+actions+=("Remove config entry from $CONFIG")
+
+echo "  Will execute:"
+for a in "${actions[@]}"; do
+    echo "    - $a"
+done
+
+echo ""
+read "confirm?  Proceed? [y/N] "
+[[ "$confirm" =~ ^[Yy]$ ]] || { echo "  Aborted."; exit 0; }
+
+# Execute
+if tmux has-session -t "=${name}" 2>/dev/null; then
+    # If we're inside tmux and killing our own session, switch away first
+    if [[ -n "${TMUX:-}" ]]; then
+        current_session=$(tmux display-message -p '#S')
+        if [[ "$current_session" == "$name" ]]; then
+            # Get ordered session list and find the preceding one
+            sessions=("${(@f)$(tmux list-sessions -F '#S')}")
+            prev=""
+            for s in "${sessions[@]}"; do
+                [[ "$s" == "$name" ]] && break
+                prev="$s"
+            done
+            # Fall back to any other session if nothing precedes
+            [[ -z "$prev" ]] && prev=$(tmux list-sessions -F '#S' | grep -v "^${name}$" | tail -1)
+            if [[ -n "$prev" ]]; then
+                tmux switch-client -t "=${prev}"
+            fi
+        fi
+    fi
+    tmux kill-session -t "=${name}"
+    echo "  Killed tmux session."
+fi
+
+# Remove config entry
+grep -v "^${name}:" "$CONFIG" > "${CONFIG}.tmp" && mv "${CONFIG}.tmp" "$CONFIG"
+echo "  Removed config entry."
+
+echo "  Done."

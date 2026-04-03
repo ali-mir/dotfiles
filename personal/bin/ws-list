@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+CONFIG="$HOME/.workstreams"
+
+if [[ ! -f "$CONFIG" ]]; then
+    echo "No workstreams configured ($CONFIG not found)."
+    exit 0
+fi
+
+printf "%-20s %-30s %s\n" "NAME" "DIRECTORY" "STATUS"
+printf "%-20s %-30s %s\n" "----" "---------" "------"
+
+while IFS=: read -r name dir; do
+    [[ "$name" =~ ^#.*$ || -z "$name" ]] && continue
+    if tmux has-session -t "=${name}" 2>/dev/null; then
+        sess_status="alive"
+    else
+        sess_status="dead"
+    fi
+    printf "%-20s %-30s %s\n" "$name" "$dir" "$sess_status"
+done < "$CONFIG"

@@ -86,6 +86,27 @@ backup_and_link "$PROFILE_DIR/.zshrc" "$HOME/.zshrc"
 # Claude Code settings
 backup_and_link "$PROFILE_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 
+# --- Personal profile: tmux + workstreams ---
+if [[ "$PROFILE" == "personal" ]]; then
+  # tmux
+  backup_and_link "$PROFILE_DIR/.tmux.conf" "$HOME/.tmux.conf"
+
+  # workstreams config (per-machine, seed from default if missing)
+  if [[ ! -f "$HOME/.workstreams" ]]; then
+    cp "$PROFILE_DIR/.workstreams.default" "$HOME/.workstreams"
+    echo "  Copied default .workstreams to ~/.workstreams"
+  else
+    echo "  ~/.workstreams already exists, skipping"
+  fi
+
+  # ws-* workstream scripts
+  mkdir -p "$HOME/bin" "$HOME/dev"
+  for script in ws ws-new ws-kill ws-list; do
+    backup_and_link "$PROFILE_DIR/bin/$script" "$HOME/bin/$script"
+    chmod +x "$HOME/bin/$script"
+  done
+fi
+
 # --- macOS-only setup ---
 if [[ "$OS" == "Darwin" ]]; then
   # homebrew
