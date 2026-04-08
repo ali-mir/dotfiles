@@ -15,6 +15,11 @@ EOF
 [[ $# -ne 1 || "$1" == "-h" || "$1" == "--help" ]] && usage
 name="$1"
 
+# Sanitize dots (same as ws-new)
+if [[ "$name" == *"."* ]]; then
+    name="${name//./-}"
+fi
+
 # Read config entry
 config_line=$(grep "^${name}:" "$CONFIG" 2>/dev/null || true)
 if [[ -z "$config_line" ]]; then
