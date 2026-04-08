@@ -6,7 +6,7 @@ CONFIG="$HOME/.workstreams"
 
 usage() {
     cat <<'EOF'
-Usage: ws-new <name> [--base <branch>] [--dir <path>]
+Usage: ws-new <name> [--base <branch>] [--branch <branch>] [--dir <path>]
 
 Create a new workstream (tmux session).
 
@@ -15,7 +15,8 @@ Modes:
   --dir <path>    Use an existing directory (no worktree, no venv)
 
 Options:
-  --base <branch>  Base branch for the worktree (default: master)
+  --base <branch>    Base branch for the worktree (default: master)
+  --branch <branch>  Git branch name if different from session name
 EOF
     exit 1
 }
@@ -23,6 +24,7 @@ EOF
 name=""
 base="master"
 dir=""
+branch=""
 mode="worktree"
 
 while [[ $# -gt 0 ]]; do
@@ -30,6 +32,9 @@ while [[ $# -gt 0 ]]; do
         --base)
             [[ $# -lt 2 ]] && usage
             base="$2"; shift 2 ;;
+        --branch)
+            [[ $# -lt 2 ]] && usage
+            branch="$2"; shift 2 ;;
         --dir)
             [[ $# -lt 2 ]] && usage
             dir="$2"; mode="dir"; shift 2 ;;
@@ -52,6 +57,9 @@ if [[ "$name" == *"."* ]]; then
     echo "Note: tmux doesn't allow dots in session names. Using '$sanitized' instead."
     name="$sanitized"
 fi
+
+# Default branch to session name if not specified
+[[ -z "$branch" ]] && branch="$name"
 
 # Check if workstream already exists in config
 if grep -q "^${name}:" "$CONFIG" 2>/dev/null; then
@@ -79,7 +87,7 @@ cleanup() {
         git -C "$MAIN_REPO" worktree remove "$HOME/$name" 2>/dev/null && echo "  Rolled back worktree."
     fi
     if $created_branch; then
-        git -C "$MAIN_REPO" branch -D "$name" 2>/dev/null && echo "  Rolled back branch."
+        git -C "$MAIN_REPO" branch -D "$branch" 2>/dev/null && echo "  Rolled back branch."
     fi
 }
 trap cleanup ERR
@@ -92,8 +100,8 @@ if [[ "$mode" == "worktree" ]]; then
         exit 1
     fi
 
-    echo "Creating worktree at $worktree_path (branch: $name, base: $base)..."
-    git -C "$MAIN_REPO" worktree add -b "$name" "$worktree_path" "$base"
+    echo "Creating worktree at $worktree_path (branch: $branch, base: $base)..."
+    git -C "$MAIN_REPO" worktree add -b "$branch" "$worktree_path" "$base"
     created_worktree=true
     created_branch=true
 
@@ -108,8 +116,10 @@ if [[ "$mode" == "worktree" ]]; then
     tmux send-keys -t "=${name}:claude" "claude" C-m
     tmux select-window -t "=${name}:zsh"
 
-    echo "${name}:~/${name}:venv,worktree" >> "$CONFIG"
-    echo "Done. Workstream '$name' created (mongo worktree off $base)."
+    config_entry="${name}:~/${name}:venv,worktree"
+    [[ "$branch" != "$name" ]] && config_entry="${config_entry}:${branch}"
+    echo "$config_entry" >> "$CONFIG"
+    echo "Done. Workstream '$name' created (branch: $branch, base: $base)."
 
 elif [[ "$mode" == "dir" ]]; then
     dir="${dir/#\~/$HOME}"

@@ -8,15 +8,21 @@ if [[ ! -f "$CONFIG" ]]; then
     exit 0
 fi
 
-printf "%-25s %-30s %-15s %s\n" "NAME" "DIRECTORY" "FLAGS" "STATUS"
-printf "%-25s %-30s %-15s %s\n" "----" "---------" "-----" "------"
+printf "%-25s %-30s %-15s %-7s %s\n" "NAME" "DIRECTORY" "FLAGS" "STATUS" "BRANCH"
+printf "%-25s %-30s %-15s %-7s %s\n" "----" "---------" "-----" "------" "------"
 
-while IFS=: read -r name dir flags; do
+while IFS=: read -r name dir flags branch rest; do
     [[ "$name" =~ ^#.*$ || -z "$name" ]] && continue
     if tmux has-session -t "=${name}" 2>/dev/null; then
         sess_status="alive"
     else
         sess_status="dead"
     fi
-    printf "%-25s %-30s %-15s %s\n" "$name" "$dir" "${flags:--}" "$sess_status"
+    # Only show branch if it differs from session name
+    if [[ -n "$branch" && "$branch" != "$name" ]]; then
+        show_branch="$branch"
+    else
+        show_branch=""
+    fi
+    printf "%-25s %-30s %-15s %-7s %s\n" "$name" "$dir" "${flags:--}" "$sess_status" "$show_branch"
 done < "$CONFIG"

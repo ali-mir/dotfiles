@@ -13,6 +13,9 @@ ws-new my-feature
 # mongo worktree off an older branch
 ws-new my-backport --base v8.0
 
+# custom branch name (session name differs from git branch)
+ws-new SERVER-123663-checkpoint-lag --branch ali-mir/SERVER-123663-checkpoint-lag
+
 # non-mongo directory
 ws-new sls --dir ~/sls/storage
 ```
@@ -41,7 +44,7 @@ ws-list     # shows all configured workstreams and whether sessions are alive
 
 ## how it works
 
-- `~/.workstreams` stores `name:directory:flags` per line
+- `~/.workstreams` stores `name:directory:flags[:branch]` per line (branch is optional, only stored when it differs from name)
 - on SSH login, `.zshrc` recreates any missing sessions from this file, then runs `ws` to attach
 - `~/bin/ws-new` and `~/bin/ws-kill` manage the full lifecycle
 
@@ -57,9 +60,11 @@ once attached to a session, use normal tmux commands:
 ## config file format
 
 ```
-# name:directory:flags
+# name:directory:flags[:branch]
 # flags: venv (activate venv/bin/activate), worktree (mongo git worktree)
+# branch: optional, only present when git branch differs from session name
 mongo:~/mongo:venv
 my-feature:~/my-feature:venv,worktree
+SERVER-123663:~/SERVER-123663:venv,worktree:ali-mir/SERVER-123663
 sls:~/sls/storage:
 ```

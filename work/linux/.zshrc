@@ -41,7 +41,7 @@ export PATH="$PATH:/home/ubuntu/.ds_toolchain/yq/bin:/home/ubuntu/.ds_toolchain/
 # Recreate sessions from ~/.workstreams on boot, then attach via session picker
 if [[ -z "$TMUX" ]]; then
     if [[ -f ~/.workstreams ]]; then
-        while IFS=: read -r name dir flags; do
+        while IFS=: read -r name dir flags branch rest; do
             [[ "$name" =~ ^#.*$ || -z "$name" ]] && continue
             dir="${dir/#\~/$HOME}"
             [[ ! -d "$dir" ]] && continue

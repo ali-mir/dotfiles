@@ -37,7 +37,10 @@ fi
 
 dir=$(echo "$config_line" | cut -d: -f2)
 flags=$(echo "$config_line" | cut -d: -f3)
+branch=$(echo "$config_line" | cut -d: -f4)
 dir="${dir/#\~/$HOME}"
+# Fall back to session name if no branch was stored
+[[ -z "$branch" ]] && branch="$name"
 
 echo "=== Killing workstream: $name ==="
 
@@ -61,8 +64,8 @@ if [[ "$flags" == *worktree* ]]; then
     fi
 
     # Check if branch exists
-    if git -C "$MAIN_REPO" rev-parse --verify "$name" &>/dev/null; then
-        actions+=("Delete branch '$name'")
+    if git -C "$MAIN_REPO" rev-parse --verify "$branch" &>/dev/null; then
+        actions+=("Delete branch '$branch'")
     fi
 
     # Find bazel cache dirs
@@ -131,8 +134,8 @@ if [[ "$is_worktree" == true ]]; then
         echo "  Removed worktree."
     fi
 
-    if git -C "$MAIN_REPO" rev-parse --verify "$name" &>/dev/null; then
-        git -C "$MAIN_REPO" branch -D "$name"
+    if git -C "$MAIN_REPO" rev-parse --verify "$branch" &>/dev/null; then
+        git -C "$MAIN_REPO" branch -D "$branch"
         echo "  Deleted branch."
     fi
 
