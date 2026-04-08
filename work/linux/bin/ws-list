@@ -8,8 +8,8 @@ if [[ ! -f "$CONFIG" ]]; then
     exit 0
 fi
 
-printf "%-20s %-30s %-15s %s\n" "NAME" "DIRECTORY" "FLAGS" "STATUS"
-printf "%-20s %-30s %-15s %s\n" "----" "---------" "-----" "------"
+printf "%-25s %-30s %-15s %s\n" "NAME" "DIRECTORY" "FLAGS" "STATUS"
+printf "%-25s %-30s %-15s %s\n" "----" "---------" "-----" "------"
 
 while IFS=: read -r name dir flags; do
     [[ "$name" =~ ^#.*$ || -z "$name" ]] && continue
@@ -18,5 +18,5 @@ while IFS=: read -r name dir flags; do
     else
         sess_status="dead"
     fi
-    printf "%-20s %-30s %-15s %s\n" "$name" "$dir" "${flags:--}" "$sess_status"
+    printf "%-25s %-30s %-15s %s\n" "$name" "$dir" "${flags:--}" "$sess_status"
 done < "$CONFIG"
