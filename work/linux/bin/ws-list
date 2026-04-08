@@ -8,8 +8,9 @@ if [[ ! -f "$CONFIG" ]]; then
     exit 0
 fi
 
-printf "%-25s %-30s %-15s %-7s %s\n" "NAME" "DIRECTORY" "FLAGS" "STATUS" "BRANCH"
-printf "%-25s %-30s %-15s %-7s %s\n" "----" "---------" "-----" "------" "------"
+# First pass: collect rows and compute max column widths
+typeset -a rows
+typeset -i w_name=4 w_dir=9 w_flags=5 w_status=6 w_branch=6  # header lengths
 
 while IFS=: read -r name dir flags branch rest; do
     [[ "$name" =~ ^#.*$ || -z "$name" ]] && continue
@@ -18,11 +19,85 @@ while IFS=: read -r name dir flags branch rest; do
     else
         sess_status="dead"
     fi
-    # Only show branch if it differs from session name
     if [[ -n "$branch" && "$branch" != "$name" ]]; then
         show_branch="$branch"
     else
         show_branch=""
     fi
-    printf "%-25s %-30s %-15s %-7s %s\n" "$name" "$dir" "${flags:--}" "$sess_status" "$show_branch"
+    flags="${flags:--}"
+    rows+=("${name}	${dir}	${flags}	${sess_status}	${show_branch}")
+    (( ${#name} > w_name )) && w_name=${#name}
+    (( ${#dir} > w_dir )) && w_dir=${#dir}
+    (( ${#flags} > w_flags )) && w_flags=${#flags}
+    (( ${#show_branch} > w_branch )) && w_branch=${#show_branch}
 done < "$CONFIG"
+
+# Drop BRANCH column entirely if no rows use it
+show_branch_col=false
+(( w_branch > 6 )) && show_branch_col=true
+
+# Clamp total width to terminal, truncating NAME/DIR/BRANCH proportionally
+term_width="${COLUMNS:-$(tput cols 2>/dev/null || echo 120)}"
+# Gaps: 2 spaces between each column
+if $show_branch_col; then
+    fixed=$((w_flags + w_status + 8))  # 4 gaps × 2 chars
+    avail=$((term_width - fixed))
+    if (( w_name + w_dir + w_branch > avail )); then
+        # Distribute available space proportionally, with minimums
+        total=$((w_name + w_dir + w_branch))
+        w_name=$(( (w_name * avail) / total ))
+        w_dir=$(( (w_dir * avail) / total ))
+        w_branch=$((avail - w_name - w_dir))
+        (( w_name < 8 )) && w_name=8
+        (( w_dir < 10 )) && w_dir=10
+        (( w_branch < 8 )) && w_branch=8
+    fi
+else
+    fixed=$((w_flags + w_status + 6))  # 3 gaps × 2 chars
+    avail=$((term_width - fixed))
+    if (( w_name + w_dir > avail )); then
+        total=$((w_name + w_dir))
+        w_name=$(( (w_name * avail) / total ))
+        w_dir=$((avail - w_name))
+        (( w_name < 8 )) && w_name=8
+        (( w_dir < 10 )) && w_dir=10
+    fi
+fi
+
+# Truncate a string to width, adding … if needed
+trunc() {
+    local s="$1" w="$2"
+    if (( ${#s} > w )); then
+        echo "${s:0:$((w-1))}…"
+    else
+        echo "$s"
+    fi
+}
+
+# Print header
+if $show_branch_col; then
+    printf "%-${w_name}s  %-${w_dir}s  %-${w_flags}s  %-${w_status}s  %s\n" \
+        "NAME" "DIRECTORY" "FLAGS" "STATUS" "BRANCH"
+    printf "%-${w_name}s  %-${w_dir}s  %-${w_flags}s  %-${w_status}s  %s\n" \
+        "----" "---------" "-----" "------" "------"
+else
+    printf "%-${w_name}s  %-${w_dir}s  %-${w_flags}s  %s\n" \
+        "NAME" "DIRECTORY" "FLAGS" "STATUS"
+    printf "%-${w_name}s  %-${w_dir}s  %-${w_flags}s  %s\n" \
+        "----" "---------" "-----" "------"
+fi
+
+# Print rows
+for row in "${rows[@]}"; do
+    IFS=$'\t' read -r name dir flags sess_status show_branch <<< "$row"
+    name=$(trunc "$name" $w_name)
+    dir=$(trunc "$dir" $w_dir)
+    if $show_branch_col; then
+        show_branch=$(trunc "$show_branch" $w_branch)
+        printf "%-${w_name}s  %-${w_dir}s  %-${w_flags}s  %-${w_status}s  %s\n" \
+            "$name" "$dir" "$flags" "$sess_status" "$show_branch"
+    else
+        printf "%-${w_name}s  %-${w_dir}s  %-${w_flags}s  %s\n" \
+            "$name" "$dir" "$flags" "$sess_status"
+    fi
+done
