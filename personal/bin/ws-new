@@ -36,6 +36,14 @@ done
 
 [[ -z "$name" ]] && usage
 
+# Sanitize name: tmux silently replaces dots with underscores, which breaks
+# subsequent target lookups. Replace dots with hyphens upfront.
+if [[ "$name" == *"."* ]]; then
+    sanitized="${name//./-}"
+    echo "Note: tmux doesn't allow dots in session names. Using '$sanitized' instead."
+    name="$sanitized"
+fi
+
 # Default directory is ~/dev/<name>
 if [[ -z "$dir" ]]; then
     dir="$DEV_DIR/$name"
