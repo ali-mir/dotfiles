@@ -5,6 +5,9 @@ plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
 
+export EDITOR=vim
+export VISUAL=vim
+
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"

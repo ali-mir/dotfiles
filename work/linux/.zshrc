@@ -10,6 +10,9 @@ plugins=(git virtualenv)
 
 source $ZSH/oh-my-zsh.sh
 
+export EDITOR=vim
+export VISUAL=vim
+
 alias activate="source venv/bin/activate"
 
 alias mongobin="cd ~/mongo/bazel-bin/install-devcore/bin/"
