@@ -3,6 +3,9 @@ common/arc/*.json
 common/arc/*.plist
 .DS_Store
 
+# secrets — tokens and credentials, never commit
+work/secrets.sh
+
 # workstreams changes frequently per-machine — only the .default template is tracked
 work/linux/.workstreams
 personal/.workstreams

@@ -20,3 +20,8 @@ export PATH="/opt/homebrew/opt/python@3.10/libexec/bin:$PATH"
 [[ -s "/Users/ali.mir/.gvm/scripts/gvm" ]] && source "/Users/ali.mir/.gvm/scripts/gvm"
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+
+# Jira/Confluence MCP
+[[ -f ~/dev/dotfiles/work/secrets.sh ]] && source ~/dev/dotfiles/work/secrets.sh
+export JIRA_URL="https://jira.mongodb.org/"
+export CONFLUENCE_URL="https://wiki.corp.mongodb.com/"

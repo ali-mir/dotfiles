@@ -36,6 +36,11 @@ export PATH=$PATH:/home/ubuntu/cli_bin
 export PATH=$PATH:/home/ubuntu/mongo/bazel-bin/install-devcore/bin
 export PATH=$PATH:/home/ubuntu/mongo/bazel-bin/install-dist-test/bin
 
+# Jira/Confluence MCP
+[[ -f ~/dev/dotfiles/work/secrets.sh ]] && source ~/dev/dotfiles/work/secrets.sh
+export JIRA_URL="https://jira.mongodb.org/"
+export CONFLUENCE_URL="https://wiki.corp.mongodb.com/"
+
 export CARGO_HOME="/home/ubuntu/.ds_toolchain/.cargo"
 export RUSTUP_HOME="/home/ubuntu/.ds_toolchain/.rustup"
 export PATH="$PATH:/home/ubuntu/.ds_toolchain/yq/bin:/home/ubuntu/.ds_toolchain/jq/bin:/home/ubuntu/.ds_toolchain/buf/bin:/home/ubuntu/.ds_toolchain/minikube/bin:/home/ubuntu/.ds_toolchain/grpcurl/bin:/home/ubuntu/.ds_toolchain/protoc/bin:/home/ubuntu/.ds_toolchain/just/bin:"
