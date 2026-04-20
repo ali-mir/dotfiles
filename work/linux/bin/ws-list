@@ -19,11 +19,16 @@ while IFS=: read -r name dir flags branch rest; do
     else
         sess_status="dead"
     fi
-    if [[ -n "$branch" && "$branch" != "$name" ]]; then
-        show_branch="$branch"
+    # Detect live branch from worktree directory, fall back to config
+    expanded_dir="${dir/#\~/$HOME}"
+    if [[ "$flags" == *worktree* ]] && [[ -d "$expanded_dir" ]]; then
+        live_branch=$(git -C "$expanded_dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
     else
-        show_branch=""
+        live_branch=""
     fi
+    show_branch="${live_branch:-$branch}"
+    # Only show branch if it differs from session name
+    [[ "$show_branch" == "$name" ]] && show_branch=""
     flags="${flags:--}"
     rows+=("${name}	${dir}	${flags}	${sess_status}	${show_branch}")
     (( ${#name} > w_name )) && w_name=${#name}

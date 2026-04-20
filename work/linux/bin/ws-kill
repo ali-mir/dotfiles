@@ -37,10 +37,14 @@ fi
 
 dir=$(echo "$config_line" | cut -d: -f2)
 flags=$(echo "$config_line" | cut -d: -f3)
-branch=$(echo "$config_line" | cut -d: -f4)
+config_branch=$(echo "$config_line" | cut -d: -f4)
 dir="${dir/#\~/$HOME}"
-# Fall back to session name if no branch was stored
-[[ -z "$branch" ]] && branch="$name"
+
+# Detect live branch from worktree directory, fall back to config then session name
+if [[ -d "$dir" ]]; then
+    branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+fi
+[[ -z "$branch" ]] && branch="${config_branch:-$name}"
 
 echo "=== Killing workstream: $name ==="
 
