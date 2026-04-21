@@ -16,6 +16,11 @@ For mongo worktrees, also:
   - Removes the git worktree
   - Deletes the branch
   - Cleans up associated bazel cache directories
+
+For --dir workstreams on a git repo, also:
+  - Checks out the repo's default branch (master/main)
+  - Deletes the working branch
+  (skipped if the working tree is dirty)
 EOF
     exit 1
 }
@@ -56,6 +61,8 @@ if tmux has-session -t "=${name}" 2>/dev/null; then
 fi
 
 is_worktree=false
+is_dir_repo=false
+dir_default_branch=""
 if [[ "$flags" == *worktree* ]]; then
     is_worktree=true
 
@@ -84,6 +91,26 @@ if [[ "$flags" == *worktree* ]]; then
                 actions+=("Remove bazel cache $(basename "$bdir") ($size)")
             fi
         done
+    fi
+elif [[ -d "$dir" ]] && git -C "$dir" rev-parse --git-dir &>/dev/null; then
+    # --dir mode on a git repo: offer to restore default branch and delete working branch
+    is_dir_repo=true
+    # Determine default branch: origin/HEAD → master → main
+    dir_default_branch=$(git -C "$dir" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || true)
+    if [[ -z "$dir_default_branch" ]]; then
+        git -C "$dir" rev-parse --verify master &>/dev/null && dir_default_branch=master
+    fi
+    if [[ -z "$dir_default_branch" ]]; then
+        git -C "$dir" rev-parse --verify main &>/dev/null && dir_default_branch=main
+    fi
+
+    if [[ -n "$dir_default_branch" && -n "$branch" && "$branch" != "$dir_default_branch" ]]; then
+        if [[ -n "$(git -C "$dir" status --porcelain 2>/dev/null)" ]]; then
+            actions+=("Skip branch cleanup in $dir (uncommitted changes on '$branch')")
+        else
+            actions+=("Checkout '$dir_default_branch' in $dir")
+            actions+=("Delete branch '$branch' in $dir")
+        fi
     fi
 fi
 
@@ -128,6 +155,17 @@ if [[ "$is_worktree" == true ]]; then
             rm -rf "$d"
             echo "  Removed bazel cache: $(basename "$d")"
         done
+    fi
+fi
+
+if [[ "$is_dir_repo" == true && -n "$dir_default_branch" && -n "$branch" && "$branch" != "$dir_default_branch" ]]; then
+    if [[ -z "$(git -C "$dir" status --porcelain 2>/dev/null)" ]]; then
+        git -C "$dir" checkout "$dir_default_branch"
+        echo "  Checked out $dir_default_branch in $dir."
+        if git -C "$dir" rev-parse --verify "$branch" &>/dev/null; then
+            git -C "$dir" branch -D "$branch"
+            echo "  Deleted branch '$branch' in $dir."
+        fi
     fi
 fi
 
