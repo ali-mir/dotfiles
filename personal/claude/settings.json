@@ -1,3 +1,11 @@
 {
-  "model": "opus"
+  "model": "opus",
+  "effortLevel": "high",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true
+  }
 }
