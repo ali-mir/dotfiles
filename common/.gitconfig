@@ -4,3 +4,6 @@
 [user]
 	name = Ali Mir
 	email = ali.ahmed.mir@gmail.com
+[credential "https://github.com"]
+	helper = 
+	helper = !gh auth git-credential
