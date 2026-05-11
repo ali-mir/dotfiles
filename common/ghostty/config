@@ -7,4 +7,4 @@ window-width = 90
 window-save-state = always
 keybind = cmd+right=next_tab
 keybind = cmd+left=previous_tab
-mouse-scroll-multiplier = precision:0.5,discrete:1
+mouse-scroll-multiplier = precision:0.25,discrete:1
