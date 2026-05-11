@@ -17,6 +17,7 @@ alias activate="source venv/bin/activate"
 
 alias mongobin="cd ~/mongo/bazel-bin/install-devcore/bin/"
 alias make_compile_commands="bazel build compiledb"
+alias tlc='java -cp $HOME/bin/tla2tools.jar tlc2.TLC'
 
 function build-ninja() {
     /home/ubuntu/mongo/venv/bin/python3 buildscripts/scons.py scons --build-profile=fast ICECC=icecc CCACHE=ccache --ninja

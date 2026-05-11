@@ -15,6 +15,7 @@ plugins=(git)
 source $ZSH/oh-my-zsh.sh
 
 alias evgws="ssh ubuntu@ali-mir-2ff.workstations.build.10gen.cc"
+alias tlc='java -cp $HOME/bin/tla2tools.jar tlc2.TLC'
 export PATH="/opt/homebrew/opt/python@3.10/libexec/bin:$PATH"
 
 [[ -s "/Users/ali.mir/.gvm/scripts/gvm" ]] && source "/Users/ali.mir/.gvm/scripts/gvm"
