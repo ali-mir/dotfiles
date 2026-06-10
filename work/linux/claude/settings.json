@@ -1,4 +1,4 @@
 {
-  "model": "claude-opus-4-7",
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "model": "claude-fable-5"
 }
