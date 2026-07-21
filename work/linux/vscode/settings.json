@@ -1,0 +1,7 @@
+{
+    "clangd.path": "/home/ubuntu/mongo/buildscripts/clangd_vscode.sh",
+    "clangd.arguments": [
+        "--background-index",
+        "--clang-tidy=false"
+    ]
+}

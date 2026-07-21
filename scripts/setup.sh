@@ -179,6 +179,9 @@ if [[ "$OS" == "Linux" ]]; then
   fi
   backup_and_link "$PROFILE_DIR/TMUX.md"       "$HOME/TMUX.md"
 
+  # VS Code (Remote-SSH server, Machine scope)
+  backup_and_link "$PROFILE_DIR/vscode/settings.json" "$HOME/.vscode-server/data/Machine/settings.json"
+
   # ws-* workstream scripts
   for script in ws ws-new ws-kill ws-list; do
     backup_and_link "$PROFILE_DIR/bin/$script" "$HOME/bin/$script"

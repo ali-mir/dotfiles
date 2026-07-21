@@ -46,6 +46,8 @@ dotfiles/
 │       │   ├── ws-new
 │       │   ├── ws-kill
 │       │   └── ws-list
+│       ├── vscode/
+│       │   └── settings.json
 │       └── claude/
 │           └── settings.json
 └── scripts/
@@ -107,6 +109,7 @@ the script checks the platform and refuses to run a macOS profile on linux (or v
 | `~/bin/ws-new` | `work/linux/bin/ws-new` |
 | `~/bin/ws-kill` | `work/linux/bin/ws-kill` |
 | `~/bin/ws-list` | `work/linux/bin/ws-list` |
+| `~/.vscode-server/data/Machine/settings.json` | `work/linux/vscode/settings.json` |
 
 ## adding a new config file
 
