@@ -3,6 +3,9 @@
     "commit": "",
     "pr": ""
   },
-  "model": "claude-opus-4-7",
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "model": "opus[1m]",
+  "permissions": {
+    "defaultMode": "auto"
+  }
 }
