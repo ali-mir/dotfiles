@@ -8,8 +8,8 @@ Workstream commands — manage tmux sessions + git worktrees for mongo developme
   ws-new <name> [options]
 
   Default mode: creates a git worktree at ~/<name>, a branch named <name>
-  off master, and a tmux session with a zsh window (venv activated) and a
-  claude window.
+  off master, a venv at ~/<name>/venv synced from the worktree's uv.lock,
+  and a tmux session with a zsh window (venv activated) and a claude window.
 
   Options:
     --base <ref>       Branch or tag to base the worktree on. Default: master.
@@ -45,6 +45,7 @@ Workstream commands — manage tmux sessions + git worktrees for mongo developme
     - Deletes the git branch
     - Removes associated bazel cache directories
     - Removes compile_commands.json if present
+    - Removes the worktree's venv
 
   For --dir sessions on a git repo (non-worktree), also:
     - Checks out the repo's default branch

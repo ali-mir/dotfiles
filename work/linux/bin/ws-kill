@@ -13,6 +13,7 @@ Remove a workstream. Kills the tmux session and removes the config entry.
 
 For mongo worktrees, also:
   - Removes compile_commands.json
+  - Removes the worktree's venv
   - Removes the git worktree
   - Deletes the branch
   - Cleans up associated bazel cache directories
@@ -71,6 +72,10 @@ if [[ "$flags" == *worktree* ]]; then
 
     if [[ -f "$dir/compile_commands.json" ]]; then
         actions+=("Remove $dir/compile_commands.json")
+    fi
+
+    if [[ -d "$dir/venv" ]]; then
+        actions+=("Remove $dir/venv ($(du -sh "$dir/venv" 2>/dev/null | cut -f1))")
     fi
 
     if git -C "$MAIN_REPO" worktree list --porcelain | grep -q "^worktree ${dir}$"; then
@@ -142,8 +147,14 @@ if [[ "$is_worktree" == true ]]; then
         echo "  Removed compile_commands.json."
     fi
 
+    # Must go before `worktree remove`, which refuses while untracked files remain.
+    if [[ -d "$dir/venv" ]]; then
+        rm -rf "$dir/venv"
+        echo "  Removed venv."
+    fi
+
     if git -C "$MAIN_REPO" worktree list --porcelain | grep -q "^worktree ${dir}$"; then
-        git -C "$MAIN_REPO" worktree remove "$dir"
+        git -C "$MAIN_REPO" worktree remove --force "$dir"
         echo "  Removed worktree."
     fi
 

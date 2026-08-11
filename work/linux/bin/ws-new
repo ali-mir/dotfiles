@@ -84,7 +84,9 @@ cleanup() {
         tmux kill-session -t "=${name}" 2>/dev/null && echo "  Rolled back tmux session."
     fi
     if $created_worktree; then
-        git -C "$MAIN_REPO" worktree remove "$HOME/$name" 2>/dev/null && echo "  Rolled back worktree."
+        # --force: the worktree contains an untracked venv/, which makes a
+        # plain `worktree remove` refuse.
+        git -C "$MAIN_REPO" worktree remove --force "$HOME/$name" 2>/dev/null && echo "  Rolled back worktree."
     fi
     if $created_branch; then
         git -C "$MAIN_REPO" branch -D "$branch" 2>/dev/null && echo "  Rolled back branch."
@@ -105,11 +107,25 @@ if [[ "$mode" == "worktree" ]]; then
     created_worktree=true
     created_branch=true
 
+    # Each worktree gets its own venv: the deps are pinned per-checkout by
+    # uv.lock, so sharing ~/mongo/venv across worktrees means running with the
+    # wrong dependency set (and bazel/wrapper_hook expects a venv in the repo).
+    echo "Creating venv at $worktree_path/venv..."
+    venv_ok=true
+    # --seed: uv_sync.sh installs its pinned uv into the venv with pip, which
+    # a bare `uv venv` doesn't provide.
+    if ! uv venv --seed "$worktree_path/venv" \
+        || ! VIRTUAL_ENV="$worktree_path/venv" "$worktree_path/buildscripts/uv_sync.sh"; then
+        venv_ok=false
+        echo "Warning: venv setup failed. Fix it in the worktree with:"
+        echo "  source $worktree_path/venv/bin/activate && buildscripts/uv_sync.sh"
+    fi
+
     echo "Creating tmux session '$name'..."
     tmux new-session -d -s "$name" -n zsh -c "$worktree_path"
     created_session=true
 
-    tmux send-keys -t "=${name}:zsh" "source $MAIN_REPO/venv/bin/activate" C-m
+    tmux send-keys -t "=${name}:zsh" "source $worktree_path/venv/bin/activate" C-m
     tmux send-keys -t "=${name}:zsh" "clear" C-m
 
     tmux new-window -t "=${name}" -n claude -c "$worktree_path"
@@ -120,6 +136,7 @@ if [[ "$mode" == "worktree" ]]; then
     [[ "$branch" != "$name" ]] && config_entry="${config_entry}:${branch}"
     echo "$config_entry" >> "$CONFIG"
     echo "Done. Workstream '$name' created (branch: $branch, base: $base)."
+    $venv_ok || echo "Note: venv is incomplete — see the warning above."
 
 elif [[ "$mode" == "dir" ]]; then
     dir="${dir/#\~/$HOME}"
