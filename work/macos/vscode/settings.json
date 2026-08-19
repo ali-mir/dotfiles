@@ -36,7 +36,5 @@
         "rust": false
     },
     "workbench.secondarySideBar.defaultVisibility": "hidden",
-    "gitlens.rebaseEditor.ordering": "asc",
-    "gitlens.ai.model": "vscode",
-    "gitlens.ai.vscode.model": "copilot:gpt-4o-mini"
+    "gitlens.rebaseEditor.ordering": "asc"
 }
