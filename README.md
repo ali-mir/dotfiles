@@ -8,6 +8,9 @@ managed configs for personal and work machines. setup scripts create symlinks fr
 dotfiles/
 ├── common/            # shared across all machines
 │   ├── .gitconfig
+│   ├── bin/           # ws-* scripts shared by every profile
+│   │   ├── ws
+│   │   └── ws-help
 │   ├── git/
 │   │   └── ignore     # global gitignore
 │   ├── ghostty/
@@ -19,6 +22,12 @@ dotfiles/
 │       └── preferences.plist.age
 ├── personal/          # personal macOS configs
 │   ├── .zshrc
+│   ├── .tmux.conf
+│   ├── .workstreams.default
+│   ├── bin/
+│   │   ├── ws-new
+│   │   ├── ws-kill
+│   │   └── ws-list
 │   ├── vscode/
 │   │   ├── settings.json
 │   │   └── extensions.txt
@@ -41,7 +50,6 @@ dotfiles/
 │       ├── .tmux.conf
 │       ├── .workstreams.default
 │       ├── bin/
-│       │   ├── ws
 │       │   ├── ws-new
 │       │   ├── ws-kill
 │       │   └── ws-list
@@ -91,6 +99,28 @@ the script checks the platform and refuses to run a macOS profile on linux (or v
 | `~/.claude/settings.json` | `<profile>/claude/settings.json` |
 | `~/.claude/CLAUDE.md` | `<profile>/claude/CLAUDE.md` (linked only if the profile has one) |
 
+### workstream scripts (personal, work-linux)
+
+every `ws*` file in `common/bin/` and `<profile>/bin/` is linked into `~/bin/`.
+the glob means a new script is picked up on the next `setup.sh` run with no
+edit to the script itself; a profile script shadows a common one of the same name.
+
+| Symlink | Target |
+|---|---|
+| `~/bin/ws` | `common/bin/ws` |
+| `~/bin/ws-help` | `common/bin/ws-help` |
+| `~/bin/ws-new` | `<profile>/bin/ws-new` |
+| `~/bin/ws-kill` | `<profile>/bin/ws-kill` |
+| `~/bin/ws-list` | `<profile>/bin/ws-list` |
+| `~/.workstreams` | copied from `<profile>/.workstreams.default` (not symlinked) |
+
+`ws` and `ws-help` are shared. `ws-new`/`ws-kill`/`ws-list` stay per-profile
+because the two profiles do genuinely different things: personal points a tmux
+session at a directory under `~/dev`, work-linux creates a mongo git worktree
+with a venv and cleans up bazel caches on kill. `ws-help` detects which by
+checking whether `~/mongo` is a git repo, and documents only the flags that
+profile actually implements.
+
 ### macOS profiles (personal, work-macos)
 
 | Symlink | Target |
@@ -105,17 +135,16 @@ the script checks the platform and refuses to run a macOS profile on linux (or v
 | Symlink | Target |
 |---|---|
 | `~/.tmux.conf` | `work/linux/.tmux.conf` |
-| `~/.workstreams` | copied from `work/linux/.workstreams.default` (not symlinked) |
-| `~/bin/ws` | `work/linux/bin/ws` |
-| `~/bin/ws-new` | `work/linux/bin/ws-new` |
-| `~/bin/ws-kill` | `work/linux/bin/ws-kill` |
-| `~/bin/ws-list` | `work/linux/bin/ws-list` |
+| `~/TMUX.md` | `work/linux/TMUX.md` |
 | `~/.vscode-server/data/Machine/settings.json` | `work/linux/vscode/settings.json` |
+
+(workstream scripts are covered in the section above.)
 
 ## adding a new config file
 
 1. copy the file into the right directory (`common/`, `personal/`, `work/macos/`, or `work/linux/`).
-2. add a `backup_and_link` call to `scripts/setup.sh`.
+2. add a `backup_and_link` call to `scripts/setup.sh`. (exception: a new `ws*`
+   script in `common/bin/` or `<profile>/bin/` is linked automatically — no edit needed.)
 3. commit and push.
 
 ## vscode extensions
@@ -166,7 +195,7 @@ ls -la ~/.ssh/config
 
 # linux
 ls -la ~/.tmux.conf ~/.workstreams
-ls -la ~/bin/ws ~/bin/ws-new ~/bin/ws-kill ~/bin/ws-list
+ls -la ~/bin/ws*
 ```
 
 symlinks should point into the dotfiles repo. `~/.workstreams` is a regular file (copied from default on first setup, then managed locally).

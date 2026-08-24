@@ -50,6 +50,20 @@ backup_and_link() {
   echo "  Linked $dest → $src"
 }
 
+# Link every ws-* script into ~/bin. Globbing means new scripts get picked up
+# without editing this list; the profile glob comes second so a profile script
+# wins over a common one of the same name.
+link_ws_scripts() {
+  mkdir -p "$HOME/bin"
+  local src name
+  for src in "$COMMON_DIR"/bin/ws* "$PROFILE_DIR"/bin/ws*; do
+    [[ -f "$src" ]] || continue
+    name="$(basename "$src")"
+    backup_and_link "$src" "$HOME/bin/$name"
+    chmod +x "$HOME/bin/$name"
+  done
+}
+
 echo "Setting up $PROFILE dotfiles from $DOTFILES_DIR"
 echo
 
@@ -105,11 +119,8 @@ if [[ "$PROFILE" == "personal" ]]; then
   fi
 
   # ws-* workstream scripts
-  mkdir -p "$HOME/bin" "$HOME/dev"
-  for script in ws ws-new ws-kill ws-list; do
-    backup_and_link "$PROFILE_DIR/bin/$script" "$HOME/bin/$script"
-    chmod +x "$HOME/bin/$script"
-  done
+  mkdir -p "$HOME/dev"
+  link_ws_scripts
 fi
 
 # --- macOS-only setup ---
@@ -185,10 +196,7 @@ if [[ "$OS" == "Linux" ]]; then
   backup_and_link "$PROFILE_DIR/vscode/settings.json" "$HOME/.vscode-server/data/Machine/settings.json"
 
   # ws-* workstream scripts
-  for script in ws ws-new ws-kill ws-list; do
-    backup_and_link "$PROFILE_DIR/bin/$script" "$HOME/bin/$script"
-    chmod +x "$HOME/bin/$script"
-  done
+  link_ws_scripts
 fi
 
 echo
@@ -202,5 +210,5 @@ if [[ "$OS" == "Darwin" ]]; then
 elif [[ "$OS" == "Linux" ]]; then
   echo "  ls -la ~/.tmux.conf"
   echo "  cat ~/.workstreams"
-  echo "  ls -la ~/bin/ws ~/bin/ws-new ~/bin/ws-kill ~/bin/ws-list"
+  echo "  ls -la ~/bin/ws*"
 fi

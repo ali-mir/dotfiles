@@ -1,0 +1,185 @@
+#!/usr/bin/env zsh
+
+# Worktree mode only exists where the mongo repo does — gate the sections
+# documenting it on that, so the personal profile doesn't advertise flags
+# its ws-new/ws-kill don't implement.
+MAIN_REPO="$HOME/mongo"
+if git -C "$MAIN_REPO" rev-parse --git-dir &>/dev/null; then
+    worktree_mode=true
+else
+    worktree_mode=false
+fi
+
+# Section header padded out to a fixed width so the rules line up.
+rule() {
+    local label="$1" width=78
+    local pad=$(( width - ${#label} - 5 ))
+    (( pad < 3 )) && pad=3
+    printf '━━━ %s ' "$label"
+    printf '━%.0s' {1..$pad}
+    printf '\n'
+}
+
+if $worktree_mode; then
+    echo "Workstream commands — manage tmux sessions + git worktrees for mongo development."
+else
+    echo "Workstream commands — manage tmux sessions for projects under ~/dev."
+fi
+echo
+
+rule ws
+cat <<'EOF'
+
+  ws
+
+  Switch workstreams. Inside tmux, opens the session picker (same as Ctrl-a s).
+  Outside tmux, attaches directly if there's one session, otherwise prints a
+  numbered menu to choose from.
+
+EOF
+
+rule ws-new
+if $worktree_mode; then
+    cat <<'EOF'
+
+  ws-new <name> [options]
+
+  Default mode: creates a git worktree at ~/<name>, a branch named <name>
+  off master, a venv at ~/<name>/venv synced from the worktree's uv.lock,
+  and a tmux session with a zsh window (venv activated) and a claude window.
+
+  Options:
+    --base <ref>       Branch or tag to base the worktree on. Default: master.
+                       Use git tags (e.g. r4.4.9) for old releases.
+    --branch <name>    Use a different git branch name from the session name.
+    --dir <path>       Skip worktree creation; point the session at an existing
+                       directory instead. Good for non-mongo repos.
+
+  Examples:
+    ws-new my-feature
+      → branch: my-feature, base: master, dir: ~/my-feature
+
+    ws-new my-feature --base v8.1
+      → branch: my-feature, base: v8.1 (e.g. for a backport)
+
+    ws-new SERVER-12345 --branch fix/my-thing
+      → session: SERVER-12345, branch: fix/my-thing
+
+    ws-new help-93592 --base r4.4.9
+      → throwaway branch at 4.4.9 tag, cleaned up by ws-kill
+
+    ws-new dotfiles --dir ~/dotfiles
+      → session pointing at existing dir, no worktree
+
+EOF
+else
+    cat <<'EOF'
+
+  ws-new <name> [--dir <path>]
+
+  Creates a tmux session for a project.
+
+  Default mode uses ~/dev/<name>. If that directory already exists it is
+  used as-is; it's only created when missing. So starting a workstream on
+  a project you already have checked out needs no flags at all.
+
+  Options:
+    --dir <path>    Point the session at <path> instead of ~/dev/<name>.
+                    Only needed for directories outside ~/dev.
+                    Created if it doesn't exist.
+
+  Dots in <name> become hyphens, since tmux rewrites them and that breaks
+  later session lookups. The directory keeps the original name.
+
+  Examples:
+    ws-new gossip-glomers
+      → session on the existing ~/dev/gossip-glomers
+
+    ws-new new-project
+      → creates ~/dev/new-project, session on it
+
+    ws-new ali-mir.github.io
+      → session 'ali-mir-github-io' on ~/dev/ali-mir.github.io
+
+    ws-new scratch --dir ~/tmp/scratch
+      → session on a path outside ~/dev
+
+EOF
+fi
+
+rule ws-kill
+cat <<'EOF'
+
+  ws-kill <name>
+
+  Removes a workstream. Always asks for confirmation before doing anything,
+  listing exactly what it will do.
+
+EOF
+if $worktree_mode; then
+    cat <<'EOF'
+  For mongo worktrees, also:
+    - Removes the git worktree directory
+    - Deletes the git branch
+    - Removes associated bazel cache directories
+    - Removes compile_commands.json if present
+    - Removes the worktree's venv
+
+  For --dir sessions on a git repo (non-worktree), also:
+    - Checks out the repo's default branch
+    - Deletes the working branch
+    (skipped if the working tree is dirty)
+
+EOF
+fi
+cat <<'EOF'
+  Always: removes the config entry from ~/.workstreams and kills the tmux
+  session. The project directory itself is never deleted.
+  Safe to run from inside the session being killed.
+
+EOF
+
+rule ws-list
+if $worktree_mode; then
+    cat <<'EOF'
+
+  ws-list
+
+  Prints all workstreams from ~/.workstreams with their directory, flags,
+  tmux session status (alive/dead), and branch (if different from session name).
+
+EOF
+else
+    cat <<'EOF'
+
+  ws-list
+
+  Prints all workstreams from ~/.workstreams with their directory and tmux
+  session status (alive/dead).
+
+EOF
+fi
+
+rule "Config file"
+if $worktree_mode; then
+    cat <<'EOF'
+
+  ~/.workstreams — one entry per line:
+    <name>:<dir>:<flags>:<branch>
+
+  flags: comma-separated, e.g. "venv,worktree"
+    worktree  — managed git worktree (ws-kill will remove it)
+    venv      — venv is activated on session start
+
+EOF
+else
+    cat <<'EOF'
+
+  ~/.workstreams — one entry per line:
+    <name>:<dir>
+
+  Directories are stored with a leading ~ so the file stays portable.
+  Editing it by hand is fine; ws-list reads it directly.
+
+EOF
+fi
