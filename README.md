@@ -24,7 +24,6 @@ dotfiles/
 │   │   └── extensions.txt
 │   └── claude/
 │       ├── settings.json
-│       ├── claude_desktop_config.json
 │       └── CLAUDE.md   # global instructions
 ├── work/
 │   ├── macos/         # work macOS configs
@@ -34,8 +33,7 @@ dotfiles/
 │   │   │   ├── keybindings.json
 │   │   │   └── extensions.txt
 │   │   ├── claude/
-│   │   │   ├── settings.json
-│   │   │   └── claude_desktop_config.json
+│   │   │   └── settings.json
 │   │   └── ssh/
 │   │       └── config
 │   └── linux/         # work linux VM configs
@@ -98,7 +96,6 @@ the script checks the platform and refuses to run a macOS profile on linux (or v
 | `~/Library/.../Code/User/settings.json` | `<profile>/vscode/settings.json` |
 | `~/Library/.../Code/User/keybindings.json` | `<profile>/vscode/keybindings.json` |
 | `~/Library/.../com.mitchellh.ghostty/config` | `common/ghostty/config` |
-| `~/Library/.../Claude/claude_desktop_config.json` | `<profile>/claude/claude_desktop_config.json` |
 | `~/.ssh/config` | `<profile>/ssh/config` |
 
 ### work-linux
@@ -163,7 +160,6 @@ ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore ~/.claude/settings.json ~/.cla
 # macOS
 ls -la "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 ls -la "$HOME/Library/Application Support/Code/User/settings.json"
-ls -la "$HOME/Library/Application Support/Claude/claude_desktop_config.json"
 ls -la ~/.ssh/config
 
 # linux

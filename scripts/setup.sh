@@ -143,9 +143,6 @@ if [[ "$OS" == "Darwin" ]]; then
   # Ghostty
   backup_and_link "$COMMON_DIR/ghostty/config" "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 
-  # Claude Desktop
-  backup_and_link "$PROFILE_DIR/claude/claude_desktop_config.json" "$HOME/Library/Application Support/Claude/claude_desktop_config.json"
-
   # VSCode extensions
   EXTENSIONS_FILE="$PROFILE_DIR/vscode/extensions.txt"
   if ! command -v code &>/dev/null; then
@@ -201,7 +198,6 @@ if [[ "$OS" == "Darwin" ]]; then
   echo "  ls -la ~/Library/Application\ Support/com.mitchellh.ghostty/config"
   echo "  ls -la ~/Library/Application\ Support/Code/User/settings.json"
   echo "  ls -la ~/Library/Application\ Support/Code/User/keybindings.json"
-  echo "  ls -la ~/Library/Application\ Support/Claude/claude_desktop_config.json"
   echo "  ls -la ~/.ssh/config"
 elif [[ "$OS" == "Linux" ]]; then
   echo "  ls -la ~/.tmux.conf"
