@@ -57,15 +57,17 @@ dotfiles/
 
 ## setting up a new machine
 
-1. clone the repo:
+1. clone the repo anywhere you like — `setup.sh` resolves the repo root from its
+   own path, so the location is not baked in. in practice:
+   `~/dev/dotfiles` on the personal laptop, `~/dotfiles` on work machines.
    ```sh
-   git clone https://github.com/ali-mir/dotfiles.git ~/dotfiles
+   git clone https://github.com/ali-mir/dotfiles.git ~/dev/dotfiles
    ```
 
 2. run the setup script with your profile:
    ```sh
    # personal macOS
-   ~/dotfiles/scripts/setup.sh personal
+   ~/dev/dotfiles/scripts/setup.sh personal
 
    # work macOS
    ~/dotfiles/scripts/setup.sh work-macos
@@ -123,8 +125,8 @@ each macOS profile has an `extensions.txt` listing installed extensions. the set
 to update the list after installing new extensions:
 ```sh
 code --list-extensions > ~/dotfiles/work/macos/vscode/extensions.txt
-# or for personal
-code --list-extensions > ~/dotfiles/personal/vscode/extensions.txt
+# or for personal laptop
+code --list-extensions > ~/dev/dotfiles/personal/vscode/extensions.txt
 ```
 
 ## arc browser
@@ -133,16 +135,16 @@ arc actively writes to its config files, so symlinks don't work. instead, use sn
 
 backups are encrypted with [`age`](https://github.com/FiloSottile/age) passphrase encryption — only `.age` files are committed, plaintext never touches git.
 
-**export** (save current arc state to the repo):
+**export** (save current arc state to the repo), from the repo root:
 ```sh
-~/dotfiles/scripts/arc-export.sh
+./scripts/arc-export.sh
 # prompts for a passphrase, produces StorableSidebar.json.age and preferences.plist.age
 ```
 
 **import** (restore on a new machine):
 ```sh
 # make sure to quit Arc first
-~/dotfiles/scripts/arc-import.sh
+./scripts/arc-import.sh
 # prompts for the passphrase, decrypts to a temp location, imports, then cleans up
 ```
 
