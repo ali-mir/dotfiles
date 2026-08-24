@@ -86,6 +86,11 @@ backup_and_link "$PROFILE_DIR/.zshrc" "$HOME/.zshrc"
 # Claude Code settings
 backup_and_link "$PROFILE_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 
+# Claude Code global instructions (not every profile has one yet)
+if [[ -f "$PROFILE_DIR/claude/CLAUDE.md" ]]; then
+  backup_and_link "$PROFILE_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+fi
+
 # --- Personal profile: tmux + workstreams ---
 if [[ "$PROFILE" == "personal" ]]; then
   # tmux
@@ -191,7 +196,7 @@ fi
 
 echo
 echo "Done. Verify with:"
-echo "  ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore ~/.claude/settings.json"
+echo "  ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore ~/.claude/settings.json ~/.claude/CLAUDE.md"
 if [[ "$OS" == "Darwin" ]]; then
   echo "  ls -la ~/Library/Application\ Support/com.mitchellh.ghostty/config"
   echo "  ls -la ~/Library/Application\ Support/Code/User/settings.json"

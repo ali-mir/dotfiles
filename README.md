@@ -24,7 +24,8 @@ dotfiles/
 │   │   └── extensions.txt
 │   └── claude/
 │       ├── settings.json
-│       └── claude_desktop_config.json
+│       ├── claude_desktop_config.json
+│       └── CLAUDE.md   # global instructions
 ├── work/
 │   ├── macos/         # work macOS configs
 │   │   ├── .zshrc
@@ -88,6 +89,7 @@ the script checks the platform and refuses to run a macOS profile on linux (or v
 | `~/.oh-my-zsh/custom/themes/agnoster-custom.zsh-theme` | `common/zsh-themes/agnoster-custom.zsh-theme` |
 | `~/.zshrc` | `<profile>/.zshrc` |
 | `~/.claude/settings.json` | `<profile>/claude/settings.json` |
+| `~/.claude/CLAUDE.md` | `<profile>/claude/CLAUDE.md` (linked only if the profile has one) |
 
 ### macOS profiles (personal, work-macos)
 
@@ -156,7 +158,7 @@ the `work-linux` profile includes tmux workstream scripts. see `~/tmux.md` for u
 after running setup:
 ```sh
 # all platforms
-ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore ~/.claude/settings.json
+ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore ~/.claude/settings.json ~/.claude/CLAUDE.md
 
 # macOS
 ls -la "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
