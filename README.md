@@ -56,7 +56,8 @@ dotfiles/
 │       ├── vscode/
 │       │   └── settings.json
 │       └── claude/
-│           └── settings.json
+│           ├── settings.json
+│           └── CLAUDE.md   # global instructions
 └── scripts/
     ├── setup.sh
     ├── arc-export.sh
