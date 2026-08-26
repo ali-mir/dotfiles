@@ -199,6 +199,20 @@ if [[ "$OS" == "Linux" ]]; then
   link_ws_scripts
 fi
 
+# --- work-linux profile: devprod MCP gateway ---
+# Streamable HTTP + Okta OAuth; no binary or client credentials needed.
+if [[ "$PROFILE" == "work-linux" ]]; then
+  if ! command -v claude &>/dev/null; then
+    echo "  Skipping devprod-mcp (claude CLI not found)"
+  elif claude mcp get devprod-mcp &>/dev/null; then
+    echo "  devprod-mcp already registered, skipping"
+  else
+    claude mcp add --scope user --transport http devprod-mcp \
+      https://devprod-mcp-gateway.corp.mongodb.com/mcp
+    echo "  Registered devprod-mcp -- run /mcp and choose Authenticate to sign in"
+  fi
+fi
+
 echo
 echo "Done. Verify with:"
 echo "  ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore ~/.claude/settings.json ~/.claude/CLAUDE.md"
