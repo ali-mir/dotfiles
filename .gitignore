@@ -12,3 +12,6 @@ personal/.workstreams
 
 # Claude Desktop rewrites this in place (UI state + account ids) — not worth tracking
 claude_desktop_config.json
+
+# Claude Code live settings — fireconnect writes the API key here
+work/linux/claude/settings.json

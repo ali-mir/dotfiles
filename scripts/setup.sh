@@ -97,8 +97,20 @@ backup_and_link "$COMMON_DIR/git/ignore"   "$HOME/.config/git/ignore"
 # profile-specific .zshrc
 backup_and_link "$PROFILE_DIR/.zshrc" "$HOME/.zshrc"
 
-# Claude Code settings
-backup_and_link "$PROFILE_DIR/claude/settings.json" "$HOME/.claude/settings.json"
+# Claude Code settings. Not symlinked: fireconnect rewrites this file in place
+# and stores the Fireworks API key in it, so the live copy has to stay
+# untracked. Seed it from the template on first run only.
+if [[ -f "$PROFILE_DIR/claude/settings.template.json" ]]; then
+  if [[ ! -f "$HOME/.claude/settings.json" ]]; then
+    mkdir -p "$HOME/.claude"
+    cp "$PROFILE_DIR/claude/settings.template.json" "$HOME/.claude/settings.json"
+    echo "  Seeded ~/.claude/settings.json from template"
+  else
+    echo "  ~/.claude/settings.json already exists, leaving it alone"
+  fi
+else
+  backup_and_link "$PROFILE_DIR/claude/settings.json" "$HOME/.claude/settings.json"
+fi
 
 # Claude Code global instructions (not every profile has one yet)
 if [[ -f "$PROFILE_DIR/claude/CLAUDE.md" ]]; then
