@@ -213,6 +213,15 @@ if [[ "$PROFILE" == "work-linux" ]]; then
   fi
 fi
 
+# --- work-linux profile: FireConnect (Fireworks model access) ---
+if [[ "$PROFILE" == "work-linux" ]]; then
+  if ! command -v claude &>/dev/null; then
+    echo "  Skipping FireConnect (claude CLI not found)"
+  else
+    "$DOTFILES_DIR/scripts/setup-fireconnect.sh"
+  fi
+fi
+
 echo
 echo "Done. Verify with:"
 echo "  ls -la ~/.zshrc ~/.gitconfig ~/.config/git/ignore ~/.claude/settings.json ~/.claude/CLAUDE.md"
