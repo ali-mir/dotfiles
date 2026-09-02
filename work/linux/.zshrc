@@ -68,3 +68,5 @@ if [[ -z "$TMUX" ]]; then
     fi
     ws || true
 fi
+
+export PATH="/home/ubuntu/.local/bin:$PATH"
