@@ -70,3 +70,6 @@ if [[ -z "$TMUX" ]]; then
 fi
 
 export PATH="/home/ubuntu/.local/bin:$PATH"
+
+# opencode
+export PATH=/home/ubuntu/.opencode/bin:$PATH
