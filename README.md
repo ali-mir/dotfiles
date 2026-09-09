@@ -56,10 +56,12 @@ dotfiles/
 │       ├── vscode/
 │       │   └── settings.json
 │       └── claude/
-│           ├── settings.json
+│           ├── settings.template.json  # seeded, not linked — see claude/README.md
+│           ├── README.md   # what the settings template does
 │           └── CLAUDE.md   # global instructions
 └── scripts/
     ├── setup.sh
+    ├── setup-fireconnect.sh
     ├── arc-export.sh
     └── arc-import.sh
 ```
@@ -97,7 +99,7 @@ the script checks the platform and refuses to run a macOS profile on linux (or v
 | `~/.config/git/ignore` | `common/git/ignore` |
 | `~/.oh-my-zsh/custom/themes/agnoster-custom.zsh-theme` | `common/zsh-themes/agnoster-custom.zsh-theme` |
 | `~/.zshrc` | `<profile>/.zshrc` |
-| `~/.claude/settings.json` | `<profile>/claude/settings.json` |
+| `~/.claude/settings.json` | `<profile>/claude/settings.json` (work-linux: see `work/linux/claude/README.md`) |
 | `~/.claude/CLAUDE.md` | `<profile>/claude/CLAUDE.md` (linked only if the profile has one) |
 
 ### workstream scripts (personal, work-linux)
