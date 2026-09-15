@@ -101,6 +101,7 @@ the script checks the platform and refuses to run a macOS profile on linux (or v
 | `~/.zshrc` | `<profile>/.zshrc` |
 | `~/.claude/settings.json` | `<profile>/claude/settings.json` (work-linux: see `work/linux/claude/README.md`) |
 | `~/.claude/CLAUDE.md` | `<profile>/claude/CLAUDE.md` (linked only if the profile has one) |
+| `~/.config/opencode/AGENTS.md` | `<profile>/opencode/AGENTS.md` (linked only if the profile has one) |
 
 ### workstream scripts (personal, work-linux)
 

@@ -9,11 +9,4 @@ patches, task logs, test results, build-failure investigation), use the
 MCP, or any other connector for these, even if one happens to be configured and
 connected. `devprod-mcp` is the single canonical path; its `evg_*` tools are a
 superset of the standalone Evergreen server. If devprod-mcp is not connected,
-fix that (re-auth via `&headless=true`) rather than falling back to another server.
-
-## Code review
-
-NEVER check out or otherwise switch the working tree to the code under review (no `gh pr checkout`,
-no `git checkout <branch>`, no `git switch`). Leave the checked-out branch exactly as it was found.
-Read the code under review out-of-tree instead: `gh pr diff`, `gh pr view`, `gh api` for file
-contents at the PR's head, or a separate worktree if a full tree is genuinely needed.
+fix that (re-auth via the headless flow) rather than falling back to another server.
