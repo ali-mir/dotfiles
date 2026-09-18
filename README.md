@@ -28,6 +28,8 @@ dotfiles/
 │   │   ├── ws-new
 │   │   ├── ws-kill
 │   │   └── ws-list
+│   ├── btop/
+│   │   └── btop.conf
 │   ├── vscode/
 │   │   ├── settings.json
 │   │   └── extensions.txt
@@ -124,6 +126,13 @@ session at a directory under `~/dev`, work-linux creates a mongo git worktree
 with a venv and cleans up bazel caches on kill. `ws-help` detects which by
 checking whether `~/mongo` is a git repo, and documents only the flags that
 profile actually implements.
+
+### personal
+
+| Symlink | Target |
+|---|---|
+| `~/.tmux.conf` | `personal/.tmux.conf` |
+| `~/.config/btop/btop.conf` | `personal/btop/btop.conf` |
 
 ### macOS profiles (personal, work-macos)
 

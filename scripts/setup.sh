@@ -122,10 +122,14 @@ if [[ -f "$PROFILE_DIR/opencode/AGENTS.md" ]]; then
   backup_and_link "$PROFILE_DIR/opencode/AGENTS.md" "$HOME/.config/opencode/AGENTS.md"
 fi
 
-# --- Personal profile: tmux + workstreams ---
+# --- Personal profile: tmux + btop + workstreams ---
 if [[ "$PROFILE" == "personal" ]]; then
   # tmux
   backup_and_link "$PROFILE_DIR/.tmux.conf" "$HOME/.tmux.conf"
+
+  # btop. Link the file, not the directory, so downloaded themes stay out of
+  # the repo. btop rewrites this through the symlink when settings change.
+  backup_and_link "$PROFILE_DIR/btop/btop.conf" "$HOME/.config/btop/btop.conf"
 
   # workstreams config (per-machine, seed from default if missing)
   if [[ ! -f "$HOME/.workstreams" ]]; then
