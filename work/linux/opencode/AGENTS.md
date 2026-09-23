@@ -10,3 +10,8 @@ MCP, or any other connector for these, even if one happens to be configured and
 connected. `devprod-mcp` is the single canonical path; its `evg_*` tools are a
 superset of the standalone Evergreen server. If devprod-mcp is not connected,
 fix that (re-auth via the headless flow) rather than falling back to another server.
+
+The one exception is the evergreen CLI: you may use it to generate and finalize
+patches inside an autonomous loop, but only when Ali directs it. Once a patch
+is running, any analysis or monitoring goes through devprod-mcp — the CLI is
+for creating patches, not tracking them.
