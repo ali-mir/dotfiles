@@ -17,7 +17,11 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-INSTALLER_URL="https://gist.github.com/RedBeard0531/87f63f7e5b073dd26a20ef24ef648248/raw"
+# Official MongoDB afterburner installer. This script puts nvm's node on PATH
+# below before invoking it — the afterburner script itself only probes
+# `command -v node` and Windows Git Bash paths, so without this its
+# adjust_claude_settings step bails with "node not found" on a lazy-nvm box.
+INSTALLER_URL="https://raw.githubusercontent.com/mongodb/afterburner/main/setup-fireconnect.sh"
 
 # nvm lazy-loads in interactive shells, so node is often not on PATH in a
 # script. Resolve it explicitly.
