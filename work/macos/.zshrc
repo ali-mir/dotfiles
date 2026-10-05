@@ -15,6 +15,25 @@ plugins=(git)
 source $ZSH/oh-my-zsh.sh
 
 alias evgws="ssh ubuntu@ali-mir-2ff.workstations.build.10gen.cc"
+
+# Reset terminal mouse/scroll modes after every ssh session. If tmux on the
+# remote dies abruptly (dropped connection, killed tab), it never gets to turn
+# off mouse reporting, so the local terminal keeps sending mouse events as
+# garbage characters. Turning the modes off here after every ssh fixes that
+# without needing a full `reset`.
+ssh() {
+  command ssh "$@"
+  local ret=$?
+  if [[ -t 1 ]]; then
+    # mouse tracking (1000/1002/1003), SGR/urxvt/xterm mouse encodings
+    # (1006/1015/1007), bracketed paste (2004)
+    printf '\e[?1000l\e[?1002l\e[?1003l\e[?1006l\e[?1015l\e[?1007l\e[?2004l'
+  fi
+  return $ret
+}
+
+# Manual fix for a terminal stuck in mouse-reporting mode (garbage on scroll)
+alias fixterm="printf '\\e[?1000l\\e[?1002l\\e[?1003l\\e[?1006l\\e[?1015l\\e[?1007l\\e[?2004l'"
 alias tlc='java -cp $HOME/bin/tla2tools.jar tlc2.TLC'
 export PATH="/opt/homebrew/opt/python@3.10/libexec/bin:$PATH"
 
