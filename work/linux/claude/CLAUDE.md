@@ -1,5 +1,14 @@
 # Global instructions
 
+## External writes — NEVER without explicit approval
+
+Never post, create, update, or transition anything on an external system — Jira (comments,
+issues, transitions, links), GitHub (PRs, comments, reviews), Slack, Confluence — unless I have
+just given an explicit, unambiguous go-ahead for that specific action in my latest message.
+Read-only queries are fine. An offer the agent makes is not approval; a reply that is ambiguous
+or answers a different question is not approval. If there is any doubt, ask and wait. The
+action being accurate, or being on my own ticket, does not make it OK.
+
 ## Jira and Evergreen — always via the devprod-mcp gateway
 
 For ANY Jira or Evergreen task (searching/reading/creating/updating tickets, CI
