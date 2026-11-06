@@ -46,7 +46,8 @@ if $worktree_mode; then
 
   Default mode: creates a git worktree at ~/<name>, a branch named <name>
   off master, a venv at ~/<name>/venv synced from the worktree's uv.lock,
-  and a tmux session with a zsh window (venv activated) and a claude window.
+  and a tmux session with a zsh window (venv activated) and a second shell
+  window with tmux's default name, ready for whichever tool you want to run.
 
   Options:
     --base <ref>       Branch or tag to base the worktree on. Default: master.
