@@ -128,7 +128,7 @@ if [[ "$mode" == "worktree" ]]; then
     tmux send-keys -t "=${name}:zsh" "source $worktree_path/venv/bin/activate" C-m
     tmux send-keys -t "=${name}:zsh" "clear" C-m
 
-    tmux new-window -t "=${name}" -c "$worktree_path"
+    tmux new-window -t "=${name}" -n ai -c "$worktree_path"
     tmux select-window -t "=${name}:zsh"
 
     config_entry="${name}:~/${name}:venv,worktree"
@@ -150,7 +150,7 @@ elif [[ "$mode" == "dir" ]]; then
     tmux new-session -d -s "$name" -n zsh -c "$dir"
     created_session=true
 
-    tmux new-window -t "=${name}" -c "$dir"
+    tmux new-window -t "=${name}" -n ai -c "$dir"
     tmux select-window -t "=${name}:zsh"
 
     # Store with ~ for portability
