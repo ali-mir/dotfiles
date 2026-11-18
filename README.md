@@ -15,11 +15,8 @@ dotfiles/
 │   │   └── ignore     # global gitignore
 │   ├── ghostty/
 │   │   └── config
-│   ├── zsh-themes/
-│   │   └── agnoster-custom.zsh-theme
-│   └── arc/           # arc browser snapshots (encrypted)
-│       ├── StorableSidebar.json.age
-│       └── preferences.plist.age
+│   └── zsh-themes/
+│       └── agnoster-custom.zsh-theme
 ├── personal/          # personal macOS configs
 │   ├── .zshrc
 │   ├── .tmux.conf
@@ -63,9 +60,7 @@ dotfiles/
 │           └── CLAUDE.md   # global instructions
 └── scripts/
     ├── setup.sh
-    ├── setup-fireconnect.sh
-    ├── arc-export.sh
-    └── arc-import.sh
+    └── setup-fireconnect.sh
 ```
 
 ## setting up a new machine
@@ -169,25 +164,6 @@ to update the list after installing new extensions:
 code --list-extensions > ~/dotfiles/work/macos/vscode/extensions.txt
 # or for personal laptop
 code --list-extensions > ~/dev/dotfiles/personal/vscode/extensions.txt
-```
-
-## arc browser
-
-arc actively writes to its config files, so symlinks don't work. instead, use snapshot-based export/import scripts. snapshots are stored in `common/arc/` so they can be shared across machines.
-
-backups are encrypted with [`age`](https://github.com/FiloSottile/age) passphrase encryption — only `.age` files are committed, plaintext never touches git.
-
-**export** (save current arc state to the repo), from the repo root:
-```sh
-./scripts/arc-export.sh
-# prompts for a passphrase, produces StorableSidebar.json.age and preferences.plist.age
-```
-
-**import** (restore on a new machine):
-```sh
-# make sure to quit Arc first
-./scripts/arc-import.sh
-# prompts for the passphrase, decrypts to a temp location, imports, then cleans up
 ```
 
 ## workstream management (linux VM)
