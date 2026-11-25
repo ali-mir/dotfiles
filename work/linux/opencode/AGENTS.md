@@ -1,28 +1,35 @@
 # Global instructions
 
-## Compilation — NEVER; always defer to Ali
+## Compilation — targeted formatting and unit tests allowed; full builds defer to Ali
 
-Coding agents must NEVER start local compilation. Ali owns the Bazel compile
-step and runs it manually so only one build runs on this machine at a time.
-This applies to every project, worktree, agent, and delegated subagent.
+Coding agents may run targeted formatting and individual unit tests, including
+the compilation needed for those targets. Ali owns full-server and broad build
+steps and runs them manually. This applies to every project, worktree, agent,
+and delegated subagent.
 
-- Never run `bazel build` or `bazelisk build`, or compile indirectly through
-  another build system, wrapper, test runner, background job, or subagent.
-  Requests to implement, fix, test, or work autonomously do not authorize compilation.
-- Unit tests (including Bazel unit tests) and JavaScript tests with resmoke are
-  allowed when they use already-built binaries and do not trigger compilation.
-  Bazel test/run/coverage may compile missing or stale targets: do not assume
-  they are compile-free. If compilation would occur, or you cannot establish
-  that it will not, defer that step to Ali; running existing test binaries directly
-  is an option. Read-only Bazel inspection is allowed.
-- Subagents and background jobs are allowed for non-compiling work. Err on the
-  side of caution with resource-heavy jobs: check available resources, keep
-  concurrency modest, and ask Ali before work likely to tax the machine.
-- When compilation is needed, give Ali the exact working directory and proposed
-  compile command, then wait for his results. Do not request tool approval to
-  compile yourself or claim compilation/tests passed without actual results.
-- Do not bypass or weaken compile-deny policies. Compilation remains user-only
-  until Ali explicitly changes this policy.
+- `bazel run format` and `bazel run +<unit-test-target>` are explicitly allowed,
+  as are their `bazelisk` equivalents. These commands may build missing or stale
+  dependencies needed for the formatter or the selected unit test; existing
+  binaries are not required.
+- Keep unit-test commands scoped to individual unit-test targets. Do not use
+  wildcard targets or broad test suites to build the entire server indirectly.
+- Never run full-server or broad builds such as
+  `bazel build --dbg install-dist-test`, distribution/install targets, or their
+  equivalents through another build system, wrapper, background job, or subagent.
+  Other compilation outside the targeted formatting/unit-test allowance must
+  be deferred to Ali. Requests to implement, fix, test, or work autonomously do
+  not authorize full-server builds.
+- JavaScript tests with resmoke are allowed when they use already-built binaries
+  and do not trigger server compilation. Read-only Bazel inspection is allowed.
+- Keep concurrency modest, check available resources before resource-heavy work,
+  and ask Ali before work likely to tax the machine. Do not run multiple builds
+  concurrently or compete with Ali's full-server build.
+- When a build outside the allowance is needed, give Ali the exact working
+  directory and proposed compile command, then wait for his results. Do not
+  request tool approval to run it yourself or claim compilation/tests passed
+  without actual results.
+- Do not bypass compile-deny policies or disguise full-server builds as
+  formatting or unit-test commands.
 
 ## Jira and Evergreen — always via the devprod-mcp gateway
 
